@@ -10,7 +10,7 @@ export class AuthService {
     constructor(
         private readonly prisma: PrismaService,
         private jwt: JwtService,
-    ) {}
+    ) { }
 
     async login(dto: AuthLoginDto) {
         dto.email = dto.email + '@hcmut.edu.vn';
@@ -21,12 +21,14 @@ export class AuthService {
             }
         });
 
+        console.log(user);
+
         if (!user) throw new ForbiddenException('The account does not exist, please sign up first.');
 
         const pwMatch = await argon.verify(user.hash_key, dto.password);
         if (!pwMatch) throw new ForbiddenException('Invalid password.');
 
-        return this.signToken(user.user_id, user.user_email);
+        return await this.signToken(user.user_id, user.user_email);
     }
 
     async signup(dto: AuthSignUpDto) {
@@ -36,12 +38,12 @@ export class AuthService {
                     user_id: dto.id
                 }
             });
-            
+
             if (user) throw new ForbiddenException('The account existed!');
 
             const hash = await argon.hash(dto.password)
 
-            const new_user = this.prisma.uSER.create({
+            const new_user = await this.prisma.uSER.create({
                 data: {
                     user_id: dto.id,
                     user_name: dto.name,
@@ -49,8 +51,50 @@ export class AuthService {
                     hash_key: hash,
                 }
             })
-            
-            return this.signToken((await new_user).user_id, (await new_user).user_email);
+
+            // Check the ID prefix and create related STUDENT or SPSO
+            if (dto.id.startsWith('00')) {
+                // Create an SPSO record
+                await this.prisma.sPSO.create({
+                    data: {
+                        SPSO_id: dto.id,
+                    }
+                });
+
+                // Connect it to the USER
+                await this.prisma.uSER.update({
+                    where: { user_id: dto.id },
+                    data: {
+                        spso: {
+                            connect: {
+                                SPSO_id: dto.id,
+                            }
+                        }
+                    },
+                })
+            }
+            else {
+                // Create a STUDENT record
+                await this.prisma.sTUDENT.create({
+                    data: {
+                        student_id: dto.id,
+                    },
+                });
+
+                // Connect it to the USER
+                await this.prisma.uSER.update({
+                    where: { user_id: dto.id },
+                    data: {
+                        students: {
+                            connect: {
+                                student_id: dto.id,
+                            }
+                        }
+                    },
+                })
+            }
+
+            return await this.signToken(new_user.user_id, new_user.user_email);
 
         }
         catch (error) {
@@ -63,11 +107,11 @@ export class AuthService {
         }
     }
 
-    async signToken(user_id: string, user_email: string): Promise<{access_token: string}> {
+    async signToken(user_id: string, user_email: string): Promise<{ access_token: string }> {
         let user_type = ""
         if (user_id.substring(0, 1) == "00") user_type = "SPSO";
         else user_type = "student";
-        
+
         const payload = {
             sub: user_id,
             user_email,
@@ -78,11 +122,11 @@ export class AuthService {
 
         try {
             const token = await this.jwt.signAsync(payload, {
-              expiresIn: '15m',
-              secret: secret,
+                expiresIn: '30m',
+                secret: secret,
             });
 
-            return {access_token: token};
+            return { access_token: token };
         }
         catch (error) {
             throw new Error('Error signing the token');
