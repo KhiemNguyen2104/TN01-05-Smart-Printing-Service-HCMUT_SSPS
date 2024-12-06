@@ -1,12 +1,11 @@
 import * as React from "react";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
-import UploadButton from "../components/UploadButton";
 import FileList from "../components/FileList";
 import BackButton from "../components/BackButton";
 // import NextButton from "../components/NextButton";
 
-const ChoosingDocuments = () => {
+const PrintingHistory = () => {
   const initialFiles = [
     { icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/e0900c012f911ca7632783c1a6a7ad126071fd3750ae83fc23de92462bd7ff19?placeholderIfAbsent=true&apiKey=5d88e23e39534e2998da369f1c9984ec", fileName: "File name.pdf", date: "13/10/2024" },
     { icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/2ff86228d1695b9271bbb74d5bf6b94227a91cd9e9d194ddcd76c2588a5827f6?placeholderIfAbsent=true&apiKey=5d88e23e39534e2998da369f1c9984ec", fileName: "File name.xls", date: "13/10/2024" },
@@ -38,8 +37,6 @@ const ChoosingDocuments = () => {
 
   return (
     <div className="flex flex-col pb-12 bg-white overflow-hidden">
-      {/* Header */}
-      <Header />
 
       <main className="flex flex-col px-14 mt-9 w-full max-md:px-5 max-md:max-w-full">
         {/* Title and Upload Button */}
@@ -47,10 +44,9 @@ const ChoosingDocuments = () => {
           <h1 className="my-2 text-3xl sm:text-3xl text-black font-semibold">
             Hệ thống in{" "}
             <span className="text-xs sm:text-sm text-neutral-400">
-              CHỌN TÀI LIỆU IN
+              LỊCH SỬ IN ẤN
             </span>
           </h1>
-          <UploadButton />
         </div>
 
         {/* Search Bar and File List */}
@@ -77,4 +73,4 @@ const ChoosingDocuments = () => {
   );
 };
 
-export default ChoosingDocuments;
+export default PrintingHistory;

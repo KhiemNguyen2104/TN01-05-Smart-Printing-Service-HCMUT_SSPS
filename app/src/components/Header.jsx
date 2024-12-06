@@ -1,6 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate(); // Khai báo useNavigate
+
+  const handleNavigate = (path) => {
+    navigate(path); // Dùng navigate để điều hướng
+  };
+
   const [showDropdown, setShowDropdown] = React.useState(false);
 
   const toggleDropdown = () => {
@@ -24,6 +31,25 @@ const Header = () => {
             TRƯỜNG ĐẠI HỌC BÁCH KHOA
           </h2>
         </div>
+      </div>
+
+      <div className="flex items-center gap-20 mx-auto">
+        <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
+          onClick={() => handleNavigate("/history")}  >
+          
+          {/* Tăng kích thước chữ */}
+          IN TÀI LIỆU
+        </button>
+        <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
+        onClick={() => handleNavigate("/history")}  >
+          {/* Tăng kích thước chữ */}
+          LỊCH SỬ IN ẤN
+        </button>
+        <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
+        onClick={() => handleNavigate("/history")}  >
+          {/* Tăng kích thước chữ */}
+          TRANG IN
+        </button>
       </div>
 
       {/* Khối chứa chữ K và dropdown */}
