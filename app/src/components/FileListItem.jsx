@@ -1,10 +1,12 @@
 import * as React from "react";
 
-const FileListItem = ({ icon, fileName, date }) => {
+const FileListItem = ({ icon, fileName, date, onClick }) => {
   return (
     <div 
       className="flex flex-wrap gap-3 sm:gap-5 justify-between px-3 sm:px-6 py-1.5 sm:py-2 mt-2 sm:mt-2 w-full text-black border-solid bg-zinc-300 bg-opacity-0 border-b-[1px] sm:border-b-[1.5px] border-neutral-400 tracking-[2px] sm:tracking-[1.96px]"
       role="listitem"
+      onClick={onClick}
+      style={{cursor: 'pointer'}}
     >
       <div className="flex gap-5">
         <img 

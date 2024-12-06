@@ -1,7 +1,7 @@
 import * as React from "react";
 import FileListItem from "./FileListItem";
 
-const FileList = ({ files }) => {
+const FileList = ({ files, onFileClick }) => {
   return (
     <div
       className="w-full h-[280px] overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-sm px-4 py-2"
@@ -16,6 +16,7 @@ const FileList = ({ files }) => {
           icon={file.icon}
           fileName={file.fileName}
           date={file.date}
+          onClick={() => onFileClick(file.id)}
         />
       ))}
     </div>

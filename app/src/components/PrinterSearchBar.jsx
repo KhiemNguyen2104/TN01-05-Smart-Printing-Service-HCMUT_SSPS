@@ -20,7 +20,7 @@ const SearchBar = ({ onSearch, onSort }) => {
         onSubmit={(e) => e.preventDefault()}
       >
         <label htmlFor="searchInput" className="sr-only">
-          Tìm kiếm tài liệu
+          Tìm kiếm máy in
         </label>
         <input
           type="search"
@@ -35,7 +35,7 @@ const SearchBar = ({ onSearch, onSort }) => {
       <div className="relative flex-shrink-0 text-black ml-4 max-md:ml-0">
         <button
           onClick={toggleDropdown}
-          className="flex items-center gap-2 px-6 py-2 bg-white rounded-lg border border-gray-300 shadow-sm text-sm sm:text-lg hover:bg-gray-100"
+          className="flex items-center gap-2 px-6 py-2 bg-white rounded-lg border border-gray-300 shadow-lg text-sm sm:text-lg hover:bg-gray-100"
           aria-label="Sắp xếp tài liệu"
         >
           <span>Sắp xếp theo</span>
@@ -52,27 +52,27 @@ const SearchBar = ({ onSearch, onSort }) => {
           <ul className="absolute top-12 right-0 bg-white rounded-lg shadow-md w-48 border border-gray-300 z-10">
             <li
               onClick={() => handleSortOption("Tên tập tin")}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+              className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Tên tập tin
+              Tên máy in
             </li>
             <li
               onClick={() => handleSortOption("Kích thước")}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+              className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Kích thước
+              Vị trí
             </li>
             <li
               onClick={() => handleSortOption("Thời gian")}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+              className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Thời gian
+              Sử dụng gần nhất
             </li>
             <li
               onClick={() => handleSortOption("Loại tài liệu")}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+              className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Loại tài liệu
+              Loại máy in
             </li>
           </ul>
         )}
