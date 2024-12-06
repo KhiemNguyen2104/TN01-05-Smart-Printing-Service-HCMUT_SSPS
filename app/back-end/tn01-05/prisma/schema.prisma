@@ -100,7 +100,7 @@ enum Locations {
 model USER {
   user_id    String @id
   user_name  String
-  user_email String
+  user_email String @unique
   hash_key   String
 
   // Relation with STUDENT
