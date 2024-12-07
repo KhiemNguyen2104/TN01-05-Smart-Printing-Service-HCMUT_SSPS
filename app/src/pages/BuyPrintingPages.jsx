@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 
 const BuyPrintingPages = () => {
   const [paperType, setPaperType] = useState("A4"); // Loại giấy đang chọn
@@ -30,26 +31,10 @@ const BuyPrintingPages = () => {
 
       <main className="flex h-full bg-gray-300 z-10">
         {/* Sidebar */}
-        <aside className="w-1/5 bg-gray-800 p-6 shadow-lg text-white overflow-y-auto">
-            <ul className="space-y-0">
-                {["A2", "A3", "A4", "A5", "Letter"].map((type, index, array) => (
-                <li
-                    key={type}
-                    className={`text-lg font-medium cursor-pointer p-2 rounded ${
-                    paperType === type
-                        ? "bg-gray-700 text-white"
-                        : "hover:bg-gray-600 hover:text-white"
-                    }`}
-                    onClick={() => handleSidebarClick(type)}
-                    style={{
-                    borderBottom: index !== array.length - 1 ? "1px solid #4A5568" : "none",
-                    }} // Thêm border ngăn cách
-                >
-                    {type}
-                </li>
-                ))}
-            </ul>
-            </aside>
+        <Sidebar 
+          menuItems={["A4", "A3", "A5", "Letter"]}
+          onItemClick={handleSidebarClick}
+        />
 
         {/* Nội dung chính */}
         <section className="w-4/5 bg-white flex flex-col p-8">
