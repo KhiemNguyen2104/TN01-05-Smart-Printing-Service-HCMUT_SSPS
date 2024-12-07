@@ -35,21 +35,21 @@ const Sidebar = ({ menuItems, onItemClick }) => {
   );
 };
 
-// // Usage example:
-// const YourComponent = () => {
-//   const menuItems = ["Thông tin cá nhân", "Số trang in", "Giao dịch", "Giỏ hàng"];
+// Usage example:
+const YourComponent = () => {
+  const menuItems = ["Thông tin cá nhân", "Số trang in", "Giao dịch", "Giỏ hàng"];
   
-//   const handleMenuClick = (item) => {
-//     console.log(`Clicked: ${item}`);
-//     // Add navigation logic here
-//   };
+  const handleMenuClick = (item) => {
+    console.log(`Clicked: ${item}`);
+    // Add navigation logic here
+  };
 
-//   return (
-//     <Sidebar 
-//       menuItems={menuItems}
-//       onItemClick={handleMenuClick}
-//     />
-//   );
-// };
+  return (
+    <Sidebar 
+      menuItems={menuItems}
+      onItemClick={handleMenuClick}
+    />
+  );
+};
 
 export default Sidebar;
