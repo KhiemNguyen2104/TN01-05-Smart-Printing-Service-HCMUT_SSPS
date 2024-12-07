@@ -11,7 +11,7 @@ export class UserService {
             const user = await this.prisma.uSER.findUnique({
                 where: {
                     user_id: in_user_id,
-                }
+                },
             })
 
             delete user.hash_key;
@@ -38,15 +38,21 @@ export class UserService {
         }
     }
 
-    async findUserByName(in_user_name: string): Promise<any> {
+    async findUserByName(
+        in_user_name: string,
+        in_orderBy: undefined | "user_id" | "user_name" | "user_email" = undefined,
+        asc: boolean = true,
+    ): Promise<any> {
         try {
             const users = await this.prisma.uSER.findMany({
                 where: {
                     user_name: in_user_name,
                 },
-                orderBy: {
-                    user_id: 'desc',
-                }
+                ...(in_orderBy && {
+                    orderBy: {
+                        [in_orderBy]: asc ? "asc" : "desc",
+                    },
+                }),
             })
 
             for (let user of users) {
@@ -60,12 +66,21 @@ export class UserService {
         }
     }
 
-    async findUserByYear(in_user_year: "22" | "21" | "23" | "20" | "00"): Promise<any> {
+    async findUserByYear(
+        in_user_year: "17" | "18" | "19" | "22" | "21" | "23" | "20" | "00",
+        in_orderBy: undefined | "user_id" | "user_name" | "user_email" = undefined,
+        asc: boolean = true,
+    ): Promise<any> {
         try {
             const users = await this.prisma.uSER.findMany({
                 where: {
                     user_id: { startsWith: in_user_year },
-                }
+                },
+                ...(in_orderBy && {
+                    orderBy: {
+                        [in_orderBy]: asc ? "asc" : "desc",
+                    },
+                }),
             })
 
             for (let user of users) {
@@ -79,7 +94,12 @@ export class UserService {
         }
     }
 
-    async findStudentByRemainingPages(floor: number, ceil: number): Promise<any> {
+    async findStudentByRemainingPages(
+        floor: number,
+        ceil: number,
+        in_orderBy: undefined | "student_id" | "remaining_pages" = undefined,
+        asc: boolean = true,
+    ): Promise<any> {
         try {
             if (ceil < floor) throw new ForbiddenException("Invalid range, the ceiling must greater than or equal to the floor.");
 
@@ -89,7 +109,12 @@ export class UserService {
                         gte: floor,
                         lte: ceil,
                     }
-                }
+                },
+                ...(in_orderBy && {
+                    orderBy: {
+                        [in_orderBy]: asc ? "asc" : "desc",
+                    },
+                }),
             })
 
             return student;
@@ -99,6 +124,22 @@ export class UserService {
         }
     }
 
+    async findSPSO(spso_id: string) {
+        try {
+            const spso = await this.prisma.sPSO.findUnique({
+                where: {
+                    SPSO_id: spso_id,
+                },
+            })
+
+            return spso;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
     // Setting functions
-    
+
+    // async updateUserByID(user_id: string, )
 }

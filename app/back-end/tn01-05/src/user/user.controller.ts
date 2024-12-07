@@ -7,6 +7,8 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private userservice: UserService) {}
 
+    // Setting functions
+
     @Get('current-user')
     @UseGuards(AuthGuard('jwt'))
     getCurrentUser(@Req() req: Request) {
@@ -21,8 +23,15 @@ export class UserController {
 
     @Get('name')
     @UseGuards(AuthGuard('jwt'))
-    findUserByName(@Query('user_name') user_name: string) {
-        return this.userservice.findUserByName(user_name);
+    findUserByName(
+        @Query('user_name') user_name: string,
+        @Query('orderBy') orderBy: undefined | "user_id" | "user_name" | "user_email",
+        @Query('acs') acs: string
+    ) {
+        let flag = true;
+        if (acs == 'false') flag = false
+        
+        return this.userservice.findUserByName(user_name, orderBy, flag);
     }
 
     @Get('email')
@@ -33,16 +42,37 @@ export class UserController {
 
     @Get('year/:year')
     @UseGuards(AuthGuard('jwt'))
-    findUserByYear(@Param('year') user_year: "20" | "21" | "22" | "23" | "00") {
-        return this.userservice.findUserByYear(user_year);
+    findUserByYear(
+        @Param('year') user_year: "17" | "18" | "19" | "22" | "21" | "23" | "20" | "00",
+        @Query('orderBy') orderBy: undefined | "user_id" | "user_name" | "user_email",
+        @Query('acs') acs: string
+    ) {
+        let flag = true;
+        if (acs == 'false') flag = false
+        
+        return this.userservice.findUserByYear(user_year, orderBy, flag);
     }
 
     @Get('student/remaining_pages')
     @UseGuards(AuthGuard('jwt'))
     findStudentByRemainingPages(
-        @Query('floor') floor: number,
-        @Query('ceil') ceil: number
+        @Query('floor') floor: string,
+        @Query('ceil') ceil: string,
+        @Query('orderBy') orderBy: undefined | "student_id" | "remaining_pages",
+        @Query('acs') acs: string
     ) {
-        return this.userservice.findStudentByRemainingPages(Number(floor), Number(ceil));
+        let flag = true;
+        if (acs == 'false') flag = false
+        
+        return this.userservice.findStudentByRemainingPages(Number(floor), Number(ceil), orderBy, flag);
     }
+
+    @Get('spso/:id')
+    @UseGuards(AuthGuard('jwt'))
+    findSPSO(@Param('id') user_id: string) {
+        return this.userservice.findSPSO(user_id);
+    }
+
+    // Setting functions
+
 }

@@ -116,20 +116,23 @@ model STUDENT {
   transactions    TRANSACTION[]
 
   // Relation between `student_id` and `user_id` of USER
-  user USER @relation(fields: [student_id], references: [user_id])
+  user USER @relation(fields: [student_id], references: [user_id], onUpdate: Cascade)
 
   // Printing jobs
   prints PRINTS[]
+
+  upload UPLOADS[]
 }
 
 model SPSO {
   SPSO_id String @id
 
   //Relation with USER
-  user USER @relation(fields: [SPSO_id], references: [user_id])
+  user USER @relation(fields: [SPSO_id], references: [user_id], onUpdate: Cascade)
 
   enables  ENABLES[]
   disables DISABLES[]
+  changes  CHANGES[]
 }
 
 model TRANSACTION {
@@ -141,7 +144,7 @@ model TRANSACTION {
   no_of_pages Int
   state       Boolean    @default(false)
 
-  student STUDENT @relation(fields: [student_id], references: [student_id])
+  student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
 
   @@id([student_id, time, page_type, price, no_of_pages, state])
 }
@@ -161,14 +164,36 @@ model PRINTER {
   disables DISABLES[]
 }
 
+model FILE {
+  file_id String @id
+
+  file_name String
+  file_size Int
+
+  uploads UPLOADS[]
+  prints  PRINTS[]
+}
+
+model UPLOADS {
+  student_id String
+  file_id    String
+
+  student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
+  file    FILE    @relation(fields: [file_id], references: [file_id], onUpdate: Cascade)
+
+  time DateTime
+
+  @@id([student_id, file_id, time])
+}
+
 model PRINTS {
   printing_job_id String @unique
   student_id      String
   printer_id      String
+  file_id         String
 
   start_time   DateTime        @default(now())
   end_time     DateTime
-  file_name    String
   no_of_copies Int             @default(1)
   double_sided Boolean         @default(false)
   direction    Page_directions @default(Portrait)
@@ -176,10 +201,11 @@ model PRINTS {
   state        Boolean         @default(false)
   pages        String
 
-  student STUDENT @relation(fields: [student_id], references: [student_id])
-  printer PRINTER @relation(fields: [printer_id], references: [printer_id])
+  student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
+  printer PRINTER @relation(fields: [printer_id], references: [printer_id], onUpdate: Cascade)
+  file    FILE    @relation(fields: [file_id], references: [file_id], onUpdate: Cascade)
 
-  @@id([student_id, printer_id, printing_job_id])
+  @@id([student_id, printer_id, printing_job_id, file_id])
 }
 
 model SYSTEM_POLICY {
@@ -190,6 +216,7 @@ model SYSTEM_POLICY {
 
   default_pages   DEFAULT_PAGE[]
   permitted_types PERMITTED_TYPE[]
+  changes         CHANGES[]
 }
 
 model DEFAULT_PAGE {
@@ -197,7 +224,7 @@ model DEFAULT_PAGE {
   page_type Page_types
   number    Int
 
-  sp SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id])
+  sp SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id], onUpdate: Cascade)
 
   @@id([SP_id, page_type, number])
 }
@@ -206,7 +233,7 @@ model PERMITTED_TYPE {
   SP_id     String
   file_type File_types
 
-  sp SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id])
+  sp SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id], onUpdate: Cascade)
 
   @@id([SP_id, file_type])
 }
@@ -215,8 +242,8 @@ model ENABLES {
   SPSO_id    String
   printer_id String
 
-  spso    SPSO    @relation(fields: [SPSO_id], references: [SPSO_id])
-  printer PRINTER @relation(fields: [printer_id], references: [printer_id])
+  spso    SPSO    @relation(fields: [SPSO_id], references: [SPSO_id], onUpdate: Cascade)
+  printer PRINTER @relation(fields: [printer_id], references: [printer_id], onUpdate: Cascade)
 
   enables_timestamp ENABLES_TIMESTAMP[]
 
@@ -229,7 +256,7 @@ model ENABLES_TIMESTAMP {
 
   time DateTime @default(now())
 
-  enables ENABLES @relation(fields: [SPSO_id, printer_id], references: [SPSO_id, printer_id])
+  enables ENABLES @relation(fields: [SPSO_id, printer_id], references: [SPSO_id, printer_id], onUpdate: Cascade)
 
   @@id([SPSO_id, printer_id, time])
 }
@@ -238,8 +265,8 @@ model DISABLES {
   SPSO_id    String
   printer_id String
 
-  spso    SPSO    @relation(fields: [SPSO_id], references: [SPSO_id])
-  printer PRINTER @relation(fields: [printer_id], references: [printer_id])
+  spso    SPSO    @relation(fields: [SPSO_id], references: [SPSO_id], onUpdate: Cascade)
+  printer PRINTER @relation(fields: [printer_id], references: [printer_id], onUpdate: Cascade)
 
   disables_timestamp DISABLES_TIMESTAMP[]
 
@@ -252,7 +279,7 @@ model DISABLES_TIMESTAMP {
 
   time DateTime @default(now())
 
-  disables DISABLES @relation(fields: [SPSO_id, printer_id], references: [SPSO_id, printer_id])
+  disables DISABLES @relation(fields: [SPSO_id, printer_id], references: [SPSO_id, printer_id], onUpdate: Cascade)
 
   @@id([SPSO_id, printer_id, time])
 }
@@ -268,6 +295,9 @@ model CHANGES {
   permitted_types CHANGES_PERMITTED_TYPES[]
   default_pages   CHANGES_DEFAULT_PAGES[]
 
+  spso SPSO          @relation(fields: [SPSO_id], references: [SPSO_id], onUpdate: Cascade)
+  sp   SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id], onUpdate: Cascade)
+
   @@id([change_id, SPSO_id, SP_id])
 }
 
@@ -276,7 +306,7 @@ model CHANGES_PERMITTED_TYPES {
 
   Type File_types
 
-  changes CHANGES @relation(fields: [change_id], references: [change_id])
+  changes CHANGES @relation(fields: [change_id], references: [change_id], onUpdate: Cascade)
 }
 
 model CHANGES_DEFAULT_PAGES {
@@ -285,7 +315,7 @@ model CHANGES_DEFAULT_PAGES {
   page_type Page_types
   number    Int
 
-  changes CHANGES @relation(fields: [change_id], references: [change_id])
+  changes CHANGES @relation(fields: [change_id], references: [change_id], onUpdate: Cascade)
 }
 
 // TODO []: Do we need a table for permitted types, an array might be a better design.
