@@ -3,8 +3,20 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const HeaderAdmin = () => {
 
+
+const HeaderAdmin = () => {
+  const navigate = useNavigate(); // Khai báo useNavigate
+
+  const handleNavigate = (path) => {
+    navigate(path); // Dùng navigate để điều hướng
+  };
+
+  const [showDropdown, setShowDropdown] = React.useState(false);
+
+  const toggleDropdown = () => {
+    setShowDropdown((prev) => !prev);
+  };
   return (
     <header className="bg-blue-900 text-white p-2 sm:p-4 flex items-center justify-between">
       {/* Logo và thông tin trường */}
@@ -26,10 +38,10 @@ const HeaderAdmin = () => {
 
       <div className="flex items-center gap-20 mx-auto">
         <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
-          onClick={() => handleNavigate("/history")}  >
+          onClick={() => handleNavigate("/principle")}  >
           
           {/* Tăng kích thước chữ */}
-          IN TÀI LIỆU
+          HỆ THỐNG
         </button>
         <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
         onClick={() => handleNavigate("/history")}  >

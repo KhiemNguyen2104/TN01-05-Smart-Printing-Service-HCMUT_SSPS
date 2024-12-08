@@ -1,56 +1,65 @@
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../components/NarbarSystem";
 import BackButton from "../components/BackButton";
 
-function PaperTypeRow({ paperType, quantity, onChange }) {
-  return (
+function AcceptRow({ fileType, state, onChange }) {
+  const handleToggle = () => {
+    onChange(fileType, state === "on" ? "off" : "on"); // Pass fileType and newState to the parent to update the state
+  };
 
+  return (
     <tr className="border-b border-gray-200">
       <td className="py-3 px-6 text-center">
-        <label className="text-lg text-gray-700">{paperType}</label>
+        <label className="text-lg text-gray-700">{fileType}</label>
       </td>
       <td className="py-3 px-6 text-center">
-      <input
-        type="number"
-        value={quantity}
-        onChange={(e) => onChange(e, paperType)}
-        className="p-2 border border-gray-300 rounded-lg w-40 text-center"
-      />
+        <button
+          onClick={handleToggle} // Trigger the toggle in the parent component
+          className={`px-10 py-3 text-xl rounded-lg text-white font-semibold transition-all duration-200 ${
+            state === "on" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+          }`}
+        >
+          {state === "on" ? "Bật" : "Tắt"} {/* Button text */}
+        </button>
       </td>
     </tr>
   );
 }
 
-function DefaultPageSet() {
-  const [date, setDate] = useState(new Date());
-  const [pages, setPages] = useState(0);
-  const [quantities, setQuantities] = useState({
-    A2: 20,
-    A3: 20,
-    A4: 20,
-    A5: 20,
-    Letter: 20,
+
+const FileListPrinciples = () => {
+  const [types, setTypes] = useState({
+    PDF: "on",
+    DOC: "on",
+    PPT: "off",
+    XLSX: "on",
   });
 
-  const handleChange = (event, paperType) => {
-    const value = event.target.value;
-    setQuantities((prevQuantities) => ({
-      ...prevQuantities,
-      [paperType]: value,
-    }));
-  };
+  const [value, setValue] = useState(0); // Initial value is 0
 
   const handleSubmit = () => {
     alert("Đơn hàng đã được xác nhận!");
     // Bạn có thể xử lý logic gửi đơn hàng tại đây
   };
 
+  const handleChangeSize = (e) => {
+    const newValue = e.target.value;
+    if (!isNaN(newValue)) {
+      setValue(newValue);
+    }
+  };
+
+  const handleToggle = (fileType, newState) => {
+    setTypes((prevState) => ({
+      ...prevState,
+      [fileType]: newState, // Cập nhật trạng thái cho fileType
+    }));
+  };
+
   return (
     <div className="max-md:px-5 max-md:max-w-full w-4/5 mx-auto">
       <Navbar />
-
       <div className="flex flex-col items-center pt-5 pb-9 mt-8 w-full bg-white rounded-2xl shadow-lg border border-solid border-neutral-300">
         {/* Ngày cấp và Nút xác nhận */}
         <div className="flex justify-between items-center w-full px-6">
@@ -58,18 +67,15 @@ function DefaultPageSet() {
             <div className="flex items-center space-x-4">
               {/* Label "Ngày cấp" */}
               <label className="font-medium text-gray-700">
-                Ngày cấp (hằng tháng):
+                Kích thước tệp tối đa (MB):
               </label>
-              
-              {/* Date Picker */}
-              <DatePicker
-                selected={date}
-                onChange={(date) => setDate(date)}
-                className="p-3 border border-gray-300 rounded-lg w-32" // Điều chỉnh kích thước của ô nhập
-                dateFormat="dd/MM"
-                showMonthDropdown
-                showYearDropdown={false} // Không cho phép chọn năm
-                scrollableYearDropdown
+              <input
+                type="number"
+                id="numberInput"
+                value={value}
+                onChange={handleChangeSize}
+                className="w-20 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="0"
               />
             </div>
           </div>
@@ -89,22 +95,20 @@ function DefaultPageSet() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="py-3 px-6 text-center font-medium text-gray-700">
-                  Loại giấy
+                  Loại tệp
                 </th>
                 <th className="py-3 px-6 text-center font-medium text-gray-700">
-                  Số trang mặc định
+                  trạng thái
                 </th>
               </tr>
             </thead>
             <tbody>
-              {Object.keys(quantities).map((paperType) => (
-
-                  <PaperTypeRow
-                    paperType={paperType}
-                    quantity={quantities[paperType]}
-                    onChange={handleChange}
-                  />
-         
+              {Object.keys(types).map((fileType) => (
+                <AcceptRow
+                  fileType={fileType} // Truyền đúng fileType
+                  state={types[fileType]} // Truyền trạng thái tương ứng với fileType
+                  onChange={handleToggle} // Truyền hàm để thay đổi trạng thái
+                />
               ))}
             </tbody>
           </table>
@@ -115,6 +119,6 @@ function DefaultPageSet() {
         </div>
     </div>
   );
-}
+};
 
-export default DefaultPageSet;
+export default FileListPrinciples;

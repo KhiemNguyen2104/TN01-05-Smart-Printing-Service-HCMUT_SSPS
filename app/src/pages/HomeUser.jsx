@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import CustomSlider from "../components/Slider";
 import images from "../data/images";
 
-const Home = () => {
+const HomeUser = () => {
   // State để lưu giá tiền giấy in
   const [quantity, setQuantity] = useState(0); // Số lượng tờ người dùng nhập
   const [finalPrice, setFinalPrice] = useState(0); // Giá cuối cùng sau giảm giá
@@ -149,4 +149,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeUser;
