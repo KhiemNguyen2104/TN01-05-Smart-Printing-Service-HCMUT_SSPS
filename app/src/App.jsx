@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
 import ProfileTransactions from "./pages/ProfileTransactions";
 import ProfileCart from "./pages/ProfileCart"
+import ProfilePrints from "./pages/ProfilePrints";
 import Home from "./pages/Home";
 import BuyPrintingPages from "./pages/BuyPrintingPages";
 import DefiningPrintingProps from "./pages/DefiningPrintingProps";
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/user-info" element={<ProfileDetails />} />
         <Route path="/profile/cart" element={<ProfileCart />} />
+        <Route path="/profile/print-pages" element={<ProfilePrints />} />
       </Routes>
     </Router>
   );
