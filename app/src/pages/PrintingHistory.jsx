@@ -1,5 +1,4 @@
 import * as React from "react";
-import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
 import FileList from "../components/FileList";
 import BackButton from "../components/BackButton";
