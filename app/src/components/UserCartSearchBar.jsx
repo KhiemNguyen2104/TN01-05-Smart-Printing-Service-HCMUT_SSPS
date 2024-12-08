@@ -1,6 +1,6 @@
 import * as React from "react";
 
-const SearchBar = ({ onSearch, onSort }) => {
+const UserTransactionSearchBar = ({ onSearch, onSort }) => {
   const [showDropdown, setShowDropdown] = React.useState(false);
 
   const toggleDropdown = () => {
@@ -9,7 +9,7 @@ const SearchBar = ({ onSearch, onSort }) => {
 
   const handleSortOption = (option) => {
     setShowDropdown(false); // Ẩn menu sau khi chọn
-    console.log("Đã chọn sắp xếp:", option);
+    // onSort(option); // Truyền giá trị sắp xếp lên thành phần cha
   };
 
   return (
@@ -20,12 +20,12 @@ const SearchBar = ({ onSearch, onSort }) => {
         onSubmit={(e) => e.preventDefault()}
       >
         <label htmlFor="searchInput" className="sr-only">
-          Tìm kiếm máy in
+          Tìm kiếm giao dịch
         </label>
         <input
           type="search"
           id="searchInput"
-          placeholder="Tìm kiếm"
+          placeholder="Tìm kiếm theo mã, trạng thái hoặc ngày"
           onChange={(e) => onSearch(e.target.value)}
           className="w-full px-4 py-2 bg-white rounded-lg border border-gray-300 text-sm sm:text-lg"
         />
@@ -36,7 +36,7 @@ const SearchBar = ({ onSearch, onSort }) => {
         <button
           onClick={toggleDropdown}
           className="flex items-center gap-2 px-6 py-2 bg-white rounded-lg border border-gray-300 shadow-lg text-sm sm:text-lg hover:bg-gray-100"
-          aria-label="Sắp xếp tài liệu"
+          aria-label="Sắp xếp giao dịch"
         >
           <span>Sắp xếp theo</span>
           <img
@@ -51,28 +51,28 @@ const SearchBar = ({ onSearch, onSort }) => {
         {showDropdown && (
           <ul className="absolute top-12 right-0 bg-white text-base rounded-lg shadow-md w-48 border border-gray-300 z-10">
             <li
-              onClick={() => handleSortOption("Tên tập tin")}
+              onClick={() => handleSortOption("ID")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Tên máy in
+              ID
             </li>
             <li
-              onClick={() => handleSortOption("Kích thước")}
+              onClick={() => handleSortOption("Ngày")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Vị trí
+              Ngày
             </li>
             <li
-              onClick={() => handleSortOption("Thời gian")}
+              onClick={() => handleSortOption("Thành tiền")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Sử dụng gần nhất
+              Thành tiền
             </li>
             <li
-              onClick={() => handleSortOption("Loại tài liệu")}
+              onClick={() => handleSortOption("Số lượng")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
-              Loại máy in
+              Số lượng
             </li>
           </ul>
         )}
@@ -81,4 +81,4 @@ const SearchBar = ({ onSearch, onSort }) => {
   );
 };
 
-export default SearchBar;
+export default UserTransactionSearchBar;

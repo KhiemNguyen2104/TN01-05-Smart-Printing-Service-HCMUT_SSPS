@@ -1,9 +1,14 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const HeaderMenu = () => {
+  const navigate = useNavigate(); // Khai báo useNavigate
+
+  const handleNavigate = (path) => {
+    navigate(path); // Dùng navigate để điều hướng
+  };
+
   const [showDropdown, setShowDropdown] = React.useState(false);
-  const navigate = useNavigate(); // Khởi tạo hook điều hướng
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
@@ -32,8 +37,29 @@ const Header = () => {
           <h1 className="text-xs sm:text-sm font-semibold">
             ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH
           </h1>
-          <h2 className="text-sm sm:text-base font-bold">TRƯỜNG ĐẠI HỌC BÁCH KHOA</h2>
+          <h2 className="text-sm sm:text-base font-bold">
+            TRƯỜNG ĐẠI HỌC BÁCH KHOA
+          </h2>
         </div>
+      </div>
+
+      <div className="flex items-center gap-20 mx-auto">
+        <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80" 
+          onClick={() => handleNavigate("/choosing-documents")}  >
+          
+          {/* Tăng kích thước chữ */}
+          IN TÀI LIỆU
+        </button>
+        <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
+        onClick={() => handleNavigate("/printing-history")}  >
+          {/* Tăng kích thước chữ */}
+          LỊCH SỬ IN
+        </button>
+        <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
+        onClick={() => handleNavigate("/history")}  >
+          {/* Tăng kích thước chữ */}
+          MUA TRANG IN
+        </button>
       </div>
 
       {/* Khối chứa chữ K và dropdown */}
@@ -58,16 +84,12 @@ const Header = () => {
         {/* Menu Dropdown */}
         {showDropdown && (
           <ul className="absolute right-0 top-12 bg-white text-lg text-black shadow-lg rounded-md w-40 z-50">
-            <li
-              className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md"
-              onClick={() => handleMenuClick("profile")}
-            >
+            <li 
+                className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md"
+                onClick={() => handleMenuClick("profile")}>
               Hồ sơ
             </li>
-            <li
-              className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md"
-              onClick={() => handleMenuClick("logout")}
-            >
+            <li className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md">
               Đăng xuất
             </li>
           </ul>
@@ -77,4 +99,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderMenu;

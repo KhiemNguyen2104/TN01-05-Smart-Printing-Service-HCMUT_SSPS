@@ -1,22 +1,17 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+const HeaderProfile = () => {
+  const navigate = useNavigate(); // Khai báo useNavigate
+
+  const handleNavigate = (path) => {
+    navigate(path); // Dùng navigate để điều hướng
+  };
+
   const [showDropdown, setShowDropdown] = React.useState(false);
-  const navigate = useNavigate(); // Khởi tạo hook điều hướng
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
-  };
-
-  const handleMenuClick = (menuItem) => {
-    if (menuItem === "profile") {
-      navigate("/profile/user-info"); // Điều hướng tới trang /profile
-    } else if (menuItem === "logout") {
-      // Xử lý logic cho đăng xuất, ví dụ: xóa token hoặc điều hướng tới trang đăng nhập
-      console.log("Đăng xuất");
-    }
-    setShowDropdown(false); // Đóng dropdown sau khi nhấn
   };
 
   return (
@@ -32,8 +27,24 @@ const Header = () => {
           <h1 className="text-xs sm:text-sm font-semibold">
             ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH
           </h1>
-          <h2 className="text-sm sm:text-base font-bold">TRƯỜNG ĐẠI HỌC BÁCH KHOA</h2>
+          <h2 className="text-sm sm:text-base font-bold">
+            TRƯỜNG ĐẠI HỌC BÁCH KHOA
+          </h2>
         </div>
+      </div>
+
+      <div className="flex items-center gap-20 mx-auto">
+        <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
+          onClick={() => handleNavigate("/")}  >
+          
+          {/* Tăng kích thước chữ */}
+          TRANG CHỦ
+        </button>
+        <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
+        onClick={() => handleNavigate("/history")}  >
+          {/* Tăng kích thước chữ */}
+          QUAY LẠI
+        </button>
       </div>
 
       {/* Khối chứa chữ K và dropdown */}
@@ -58,16 +69,10 @@ const Header = () => {
         {/* Menu Dropdown */}
         {showDropdown && (
           <ul className="absolute right-0 top-12 bg-white text-lg text-black shadow-lg rounded-md w-40 z-50">
-            <li
-              className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md"
-              onClick={() => handleMenuClick("profile")}
-            >
+            <li className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md">
               Hồ sơ
             </li>
-            <li
-              className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md"
-              onClick={() => handleMenuClick("logout")}
-            >
+            <li className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md">
               Đăng xuất
             </li>
           </ul>
@@ -77,4 +82,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderProfile;

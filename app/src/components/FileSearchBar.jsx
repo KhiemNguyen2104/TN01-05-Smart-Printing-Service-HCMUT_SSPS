@@ -49,7 +49,7 @@ const SearchBar = ({ onSearch, onSort }) => {
 
         {/* Dropdown menu */}
         {showDropdown && (
-          <ul className="absolute top-12 right-0 bg-white rounded-lg shadow-md w-48 border border-gray-300 z-10">
+          <ul className="absolute top-12 right-0 bg-white text-base rounded-lg shadow-md w-48 border border-gray-300 z-10">
             <li
               onClick={() => handleSortOption("Tên tập tin")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
