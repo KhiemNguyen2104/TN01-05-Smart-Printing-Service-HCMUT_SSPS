@@ -6,6 +6,7 @@ import DefiningPrintingProps from "./pages/DefiningPrintingProps";
 import BuyPrintingPages from "./pages/BuyPrintingPages";
 import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
+import ProfilePrints from "./pages/ProfilePrints";
 
 const App = () => {
   return (
@@ -17,6 +18,8 @@ const App = () => {
         <Route path="/buy-printing-pages" element={<BuyPrintingPages />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/user-info" element={<ProfileDetails />} />
+        <Route path="/profile/print-pages" element={<ProfilePrints />} />
+
         
       </Routes>
     </Router>

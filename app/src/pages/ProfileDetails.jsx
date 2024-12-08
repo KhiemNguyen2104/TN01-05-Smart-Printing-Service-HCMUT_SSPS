@@ -33,20 +33,31 @@ const ProfileDetails = () => {
     };
 
     const chartOptions = {
-        responsive: true,
-        plugins: {
+      responsive: true,
+      plugins: {
         legend: {
-            display: false,
+          display: false,
         },
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          }
         },
-        scales: {
         y: {
-            ticks: {
+          grid: {
+            display: false
+          },
+          ticks: {
             beginAtZero: true,
             precision: 0,
-            },
-        },
-        },
+          }
+        }
+      },
+      barThickness: 30,
+      categoryPercentage: 0.9, // Controls spacing between categories
+      barPercentage: 0.9, // Controls width of bars within category
     };
 
     const handleSidebarClick = (menuItem) => {
@@ -82,14 +93,20 @@ const ProfileDetails = () => {
 
     {/* Main content - takes up remaining 4/5 width */}
     <div className="w-4/5 p-8 overflow-auto">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-md p-6">
+    <h1 className="my-2 text-5xl sm:text-3xl text-black font-semibold">
+              Hệ thống in{" "}
+              <span className="text-xs sm:text-sm text-neutral-400">
+                HỒ SƠ CÁ NHÂN
+              </span>
+            </h1>
+      <div className="max-w-8xl mx-auto bg-white shadow-md rounded-md p-6">
         <div className="flex justify-between items-center border-b pb-4 mb-4">
-          <h1 className="text-xl font-semibold">Hệ thống in</h1>
-          <h2 className="text-lg text-gray-600">HỒ SƠ CÁ NHÂN</h2>
+          <h1 className="text-xl font-semibold"><span className="font-bold">ID:</span> {userData.id}</h1>
+          {/* <h2 className="text-lg text-gray-600">HỒ SƠ CÁ NHÂN</h2> */}
         </div>
 
         <div className="mb-6">
-          <p><strong>ID:</strong> {userData.id}</p>
+          {/* <p><strong>ID:</strong> {userData.id}</p> */}
           <p><strong>Mã số sinh viên:</strong> {userData.studentId}</p>
           <p><strong>Họ và tên:</strong> {userData.name}</p>
           <p><strong>Email:</strong> {userData.email}</p>
@@ -98,7 +115,9 @@ const ProfileDetails = () => {
 
         <div>
           <h3 className="text-lg font-semibold mb-4">Thống kê số lần in:</h3>
-          <Bar data={chartData} options={chartOptions} />
+          <div className="w-1/2 ml-0"> {/* Container for Bar chart */}
+            <Bar data={chartData} options={chartOptions} />
+          </div>
         </div>
       </div>
     </div>
