@@ -56,7 +56,7 @@ const HeaderMenu = () => {
           LỊCH SỬ IN
         </button>
         <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
-        onClick={() => handleNavigate("/history")}  >
+        onClick={() => handleNavigate("/buy-printing-pages")}  >
           {/* Tăng kích thước chữ */}
           MUA TRANG IN
         </button>

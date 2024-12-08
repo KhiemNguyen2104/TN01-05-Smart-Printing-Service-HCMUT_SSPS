@@ -4,8 +4,15 @@ import PrinterList from "../components/PrinterList";
 import BackButton from "../components/BackButton";
 import SearchBar from "../components/PrinterSearchBar";
 import Pagination from "../components/Pagination"; // Import Pagination component
+import { useNavigate } from "react-router-dom";
 
 const ChoosingPrinters = () => {
+  const navigate = useNavigate();
+
+  const handlePrinterClick = (printerID) => {
+    navigate('/defining-printing-props');
+  }
+
   const printerList = [
     {
       id: 1,
@@ -87,7 +94,7 @@ const ChoosingPrinters = () => {
 
           {/* Printer List */}
           <div className="printer-list mt-5 w-full px-5">
-            <PrinterList printers={currentPrinters} />
+            <PrinterList printers={currentPrinters} onPrinterClick={handlePrinterClick}/>
           </div>
         </div>
         

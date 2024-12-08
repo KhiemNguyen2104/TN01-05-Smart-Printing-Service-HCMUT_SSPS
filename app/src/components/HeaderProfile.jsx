@@ -34,14 +34,16 @@ const HeaderProfile = () => {
       </div>
 
       <div className="flex items-center gap-20 mx-auto">
-        <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
-          onClick={() => handleNavigate("/")}  >
+        <button 
+            className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
+            onClick={() => handleNavigate("/")}  >
           
           {/* Tăng kích thước chữ */}
           TRANG CHỦ
         </button>
-        <button className="text-2xl sm:text-2xl font-bold text-white hover:opacity-80"
-        onClick={() => handleNavigate("/history")}  >
+        <button 
+            className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
+            onClick={() => handleNavigate(window.history.back())}  >
           {/* Tăng kích thước chữ */}
           QUAY LẠI
         </button>

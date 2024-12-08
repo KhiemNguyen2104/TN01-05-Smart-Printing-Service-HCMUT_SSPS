@@ -25,7 +25,7 @@ const UserTransactionSearchBar = ({ onSearch, onSort }) => {
         <input
           type="search"
           id="searchInput"
-          placeholder="Tìm kiếm theo mã, trạng thái hoặc ngày"
+          placeholder="Tìm kiếm theo mã, loại giấy, số lượng hoặc ngày"
           onChange={(e) => onSearch(e.target.value)}
           className="w-full px-4 py-2 bg-white rounded-lg border border-gray-300 text-sm sm:text-lg"
         />

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-const PrinterCard = ({ name, image }) => {
+const PrinterCard = ({ name, image, onCLick }) => {
   return (
     <div className="flex flex-col items-center border border-gray-300 rounded-lg bg-white shadow-lg overflow-hidden w-full max-md:w-full transition-all duration-300 hover:scale-105">
       {/* Image Container */}
@@ -24,7 +24,9 @@ const PrinterCard = ({ name, image }) => {
             Chi tiết ›
           </button>
           {/* Select Button */}
-          <button className="px-4 py-2 bg-sky-600 rounded-lg text-sm font-semibold transition-all duration-200 hover:bg-sky-700 hover:scale-105 hover:shadow-md">
+          <button 
+            className="px-4 py-2 bg-sky-600 rounded-lg text-sm font-semibold transition-all duration-200 hover:bg-sky-700 hover:scale-105 hover:shadow-md"
+            onClick={onCLick}>
             Chọn
           </button>
         </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 // import { Bar } from "react-chartjs-2";
-import Header from "../components/Header";
+import HeaderProfile from "../components/HeaderProfile";
 import Sidebar from "../components/Sidebar";
 import "chart.js/auto";
 import UserTransactionTable from "../components/UserTransactionTable";
@@ -42,7 +42,7 @@ const ProfileTransactions = () => {
   return (
     <div className="flex flex-col bg-gray-100 h-screen overflow">
         {/* Header */}
-        <Header />
+        <HeaderProfile />
 
         <main className="flex h-full bg-gray-300">
             {/* Sidebar */}

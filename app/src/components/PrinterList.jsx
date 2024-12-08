@@ -1,7 +1,7 @@
 import * as React from "react";
 import PrinterCard from "../components/PrinterCard";
 
-const PrinterList = ({ printers }) => {
+const PrinterList = ({ printers, onPrinterClick }) => {
   return (
     <div className="flex justify-center mt-6 w-full">
       {/* Container for PrinterCards */}
@@ -11,6 +11,7 @@ const PrinterList = ({ printers }) => {
             key={printer.id}
             name={printer.name}
             image={printer.image}
+            onCLick={onPrinterClick}
           />
         ))}
       </div>
