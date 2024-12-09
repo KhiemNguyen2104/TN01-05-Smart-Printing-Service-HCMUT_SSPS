@@ -1,14 +1,52 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Add login logic here
-    console.log({ email, password, rememberMe });
+    let mail = email.substring(0, email.indexOf("@"));
+    const loginData = { email: mail, password: password }; // Assuming email and password are defined
+    console.log(loginData);
+
+    try {
+      const response = await fetch('http://localhost:3001/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Login successful:', result);
+        localStorage.setItem('token', result.access_token);
+      } else {
+        console.error('Login failed:', response.statusText);
+      }
+
+      const current_user = await fetch('http://localhost:3001/user/current-user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        }
+      });
+      const user = await current_user.json();
+      localStorage.setItem('currentUser', user);
+      console.log(user);
+
+      if (user.user_id.startsWith('00')) navigate('/admin');
+      else navigate('/');
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
   };
 
   return (
