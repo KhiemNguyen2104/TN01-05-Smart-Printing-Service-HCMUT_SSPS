@@ -5,7 +5,7 @@ import { NewPrinterDto } from './dto';
 
 @Controller('printer')
 export class PrinterController {
-    constructor(private printersevice: PrinterService) {}
+    constructor(private printersevice: PrinterService) { }
 
     @Post('new')
     @UseGuards(AuthGuard('jwt'))
@@ -43,5 +43,5 @@ export class PrinterController {
         return this.printersevice.findPrinterByManufacturer(manufacturer, orderBy, flag);
     }
 
-    
+
 }
