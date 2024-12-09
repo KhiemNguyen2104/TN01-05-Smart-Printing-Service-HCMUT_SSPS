@@ -42,23 +42,6 @@ enum Page_directions {
 
 // The available locations for the printers
 enum Locations {
-  // Di An Campus
-  H1_F1
-  H1_F4
-  H1_F8
-
-  H2_F1
-  H2_F3
-  H2_F6
-
-  H3_F1
-  H3_F3
-  H3_F6
-
-  H6_F1
-  H6_F4
-  H6_F8
-
   //HCM Campus
   A1_F1
   A1_F3
@@ -95,6 +78,23 @@ enum Locations {
   C6_F1
   C6_F3
   C6_F6
+
+  // Di An Campus
+  H1_F1
+  H1_F4
+  H1_F8
+
+  H2_F1
+  H2_F3
+  H2_F6
+
+  H3_F1
+  H3_F3
+  H3_F6
+
+  H6_F1
+  H6_F4
+  H6_F8
 }
 
 model USER {
@@ -167,8 +167,11 @@ model PRINTER {
 model FILE {
   file_id String @id
 
-  file_name String
+  file_name String 
+  file_type File_types
   file_size Int
+
+  @@unique([file_name, file_type])
 
   uploads UPLOADS[]
   prints  PRINTS[]
@@ -181,7 +184,7 @@ model UPLOADS {
   student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
   file    FILE    @relation(fields: [file_id], references: [file_id], onUpdate: Cascade)
 
-  time DateTime
+  time DateTime @default(now())
 
   @@id([student_id, file_id, time])
 }

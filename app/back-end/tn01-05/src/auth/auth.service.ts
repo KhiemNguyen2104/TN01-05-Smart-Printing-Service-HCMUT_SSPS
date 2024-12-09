@@ -21,8 +21,6 @@ export class AuthService {
             }
         });
 
-        console.log(user);
-
         if (!user) throw new ForbiddenException('The account does not exist, please sign up first.');
 
         const pwMatch = await argon.verify(user.hash_key, dto.password);

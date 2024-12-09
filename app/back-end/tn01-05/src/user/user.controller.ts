@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { query, Request } from 'express';
 import { UserService } from './user.service';
+import { UpdateUserDto } from './dto/user.dto';
 
 @Controller('user')
 export class UserController {
@@ -17,13 +18,13 @@ export class UserController {
 
     @Get('id/:id')
     @UseGuards(AuthGuard('jwt'))
-    findUserById(@Param('id') user_id: string) {
-        return this.userservice.findUserById(user_id);
+    async findUserById(@Param('id') user_id: string) {
+        return await this.userservice.findUserById(user_id);
     }
 
     @Get('name')
     @UseGuards(AuthGuard('jwt'))
-    findUserByName(
+    async findUserByName(
         @Query('user_name') user_name: string,
         @Query('orderBy') orderBy: undefined | "user_id" | "user_name" | "user_email",
         @Query('acs') acs: string
@@ -31,18 +32,18 @@ export class UserController {
         let flag = true;
         if (acs == 'false') flag = false
         
-        return this.userservice.findUserByName(user_name, orderBy, flag);
+        return await this.userservice.findUserByName(user_name, orderBy, flag);
     }
 
     @Get('email')
     @UseGuards(AuthGuard('jwt'))
-    findUserByEmail(@Query('user_email') user_email: string) {
-        return this.userservice.findUserByEmail(user_email);
+    async findUserByEmail(@Query('user_email') user_email: string) {
+        return await this.userservice.findUserByEmail(user_email);
     }
 
     @Get('year/:year')
     @UseGuards(AuthGuard('jwt'))
-    findUserByYear(
+    async findUserByYear(
         @Param('year') user_year: "17" | "18" | "19" | "22" | "21" | "23" | "20" | "00",
         @Query('orderBy') orderBy: undefined | "user_id" | "user_name" | "user_email",
         @Query('acs') acs: string
@@ -50,12 +51,12 @@ export class UserController {
         let flag = true;
         if (acs == 'false') flag = false
         
-        return this.userservice.findUserByYear(user_year, orderBy, flag);
+        return await this.userservice.findUserByYear(user_year, orderBy, flag);
     }
 
     @Get('student/remaining_pages')
     @UseGuards(AuthGuard('jwt'))
-    findStudentByRemainingPages(
+    async findStudentByRemainingPages(
         @Query('floor') floor: string,
         @Query('ceil') ceil: string,
         @Query('orderBy') orderBy: undefined | "student_id" | "remaining_pages",
@@ -64,15 +65,20 @@ export class UserController {
         let flag = true;
         if (acs == 'false') flag = false
         
-        return this.userservice.findStudentByRemainingPages(Number(floor), Number(ceil), orderBy, flag);
+        return await this.userservice.findStudentByRemainingPages(Number(floor), Number(ceil), orderBy, flag);
     }
 
     @Get('spso/:id')
     @UseGuards(AuthGuard('jwt'))
-    findSPSO(@Param('id') user_id: string) {
-        return this.userservice.findSPSO(user_id);
+    async findSPSO(@Param('id') user_id: string) {
+        return await this.userservice.findSPSO(user_id);
     }
 
     // Setting functions
 
+    @Put('update')
+    @UseGuards(AuthGuard('jwt'))
+    async updateUser(@Body() dto: UpdateUserDto) {
+        return await this.userservice.updateUser(dto);
+    }
 }

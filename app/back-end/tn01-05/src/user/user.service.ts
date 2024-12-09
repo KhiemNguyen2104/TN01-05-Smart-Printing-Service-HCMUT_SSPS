@@ -1,5 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateUserDto } from './dto/user.dto';
+import * as argon from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -141,5 +143,34 @@ export class UserService {
 
     // Setting functions
 
-    // async updateUserByID(user_id: string, )
+    async updateUser(dto: UpdateUserDto) {
+        try {
+            if (!dto.user_id && !dto.user_email) {
+                throw new ForbiddenException("An ID or an email is required for updating");
+            }
+        
+            // Determine the `where` clause dynamically
+            const whereCondition = dto.user_id
+                ? { user_id: dto.user_id }
+                : { user_email: dto.user_email };
+        
+            // Build the `data` object dynamically
+            const dataToUpdate = {
+                ...(dto.user_email && { user_email: dto.user_email }),
+                ...(dto.user_name && { user_name: dto.user_name }),
+                ...(dto.user_password && { hash_key: await argon.hash(dto.user_password) }),
+            };
+        
+            // Perform the update
+            const updatedUser = await this.prisma.uSER.update({
+                where: whereCondition,
+                data: dataToUpdate,
+            });
+        
+            return updatedUser;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 }
