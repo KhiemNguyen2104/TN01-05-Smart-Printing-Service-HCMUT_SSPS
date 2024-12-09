@@ -1,24 +1,19 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
-const Header = () => {
+
+const HeaderAdmin = () => {
+  const navigate = useNavigate(); // Khai báo useNavigate
+
+  const handleNavigate = (path) => {
+    navigate(path); // Dùng navigate để điều hướng
+  };
+
   const [showDropdown, setShowDropdown] = React.useState(false);
-  const navigate = useNavigate(); // Khởi tạo hook điều hướng
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
   };
-
-  const handleMenuClick = (menuItem) => {
-    if (menuItem === "profile") {
-      navigate("/profile/user-info"); // Điều hướng tới trang /profile
-    } else if (menuItem === "logout") {
-      // Xử lý logic cho đăng xuất, ví dụ: xóa token hoặc điều hướng tới trang đăng nhập
-      console.log("Đăng xuất");
-    }
-    setShowDropdown(false); // Đóng dropdown sau khi nhấn
-  };
-
   return (
     <header className="bg-blue-900 text-white p-2 sm:p-4 flex items-center justify-between">
       {/* Logo và thông tin trường */}
@@ -32,22 +27,29 @@ const Header = () => {
           <h1 className="text-xs sm:text-sm font-semibold">
             ĐẠI HỌC QUỐC GIA TP. HỒ CHÍ MINH
           </h1>
-          <h2 className="text-sm sm:text-base font-bold">TRƯỜNG ĐẠI HỌC BÁCH KHOA</h2>
+          <h2 className="text-sm sm:text-base font-bold">
+            TRƯỜNG ĐẠI HỌC BÁCH KHOA
+          </h2>
         </div>
       </div>
 
       <div className="flex items-center gap-20 mx-auto">
-        <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80" 
-          onClick={() => navigate("/")}  >
+        <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
+          onClick={() => handleNavigate("/admin")}  >
           
           {/* Tăng kích thước chữ */}
           TRANG CHỦ
         </button>
-        <button 
-            className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
-            onClick={() => navigate(window.history.back())}  >
+        <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
+          onClick={() => handleNavigate("/default")}  >
+          
           {/* Tăng kích thước chữ */}
-          QUAY LẠI
+          HỆ THỐNG
+        </button>
+        <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
+        onClick={() => handleNavigate("/printing-history")}  >
+          {/* Tăng kích thước chữ */}
+          LỊCH SỬ IN ẤN
         </button>
       </div>
 
@@ -72,17 +74,11 @@ const Header = () => {
 
         {/* Menu Dropdown */}
         {showDropdown && (
-          <ul className="absolute right-0 top-12 bg-white text-lg text-black shadow-lg rounded-md w-40 z-50">
-            <li
-              className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md"
-              onClick={() => handleMenuClick("profile")}
-            >
+          <ul className="absolute right-0 top-12 bg-white text-black shadow-lg rounded-md w-40 z-50">
+            <li className="px-4 py-2 cursor-pointer hover:bg-gray-200">
               Hồ sơ
             </li>
-            <li
-              className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md"
-              onClick={() => handleMenuClick("logout")}
-            >
+            <li className="px-4 py-2 cursor-pointer hover:bg-gray-200">
               Đăng xuất
             </li>
           </ul>
@@ -92,4 +88,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderAdmin;

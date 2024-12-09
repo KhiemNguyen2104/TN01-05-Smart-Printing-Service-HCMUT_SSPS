@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import NextButton from "../components/NextButton";
 import BackButton from "../components/BackButton";
+import { useNavigate } from "react-router-dom";
 
 const DefiningPrintingProps = () => {
+  const navigate = useNavigate(); // Hook điều hướng
+
   // Existing state for print settings
   const [orientation, setOrientation] = useState("portrait");
   const [printOption, setPrintOption] = useState("all");
@@ -228,7 +231,7 @@ const DefiningPrintingProps = () => {
 
           <div className="shadow-lg p-4 bg-white flex justify-between">
             <BackButton onClick={() => window.history.back()}/>
-            <NextButton />
+            <NextButton onClick={() => navigate("/buy-printing-pages")} />
           </div>
         </section>
       </main>
