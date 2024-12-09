@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrinterCard from "../components/PrinterCard";
+import PrinterCard from "./PrinterCard";
 
 const PrinterList = ({ printers, onPrinterClick }) => {
   return (

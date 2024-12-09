@@ -27,7 +27,7 @@ export class FileService {
             })
 
             if (!system_policy) {
-                if (dto.file_size/1024 > 200) throw new ForbiddenException("The file is too large for uploading");
+                if (dto.file_size/1024 > 500) throw new ForbiddenException("The file is too large for uploading");
             }
             else {
                 if (dto.file_size/1024 > system_policy.max_file_size) throw new ForbiddenException("The file is too large for uploading");

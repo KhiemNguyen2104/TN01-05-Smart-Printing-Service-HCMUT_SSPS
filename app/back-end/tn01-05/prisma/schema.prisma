@@ -25,6 +25,18 @@ enum File_types {
   PPTX
 }
 
+enum Printing_states {
+  Succesful
+  Fail_Not_Enough_pages
+  Fail_Cancel
+}
+
+enum Transaction_states {
+  Succesful
+  Fail_Pending
+  Fail_Cancel
+}
+
 // The types of printing pages
 enum Page_types {
   A2
@@ -142,7 +154,7 @@ model TRANSACTION {
   page_type   Page_types
   price       Int
   no_of_pages Int
-  state       Boolean    @default(false)
+  state       Transaction_states @default(Fail_Pending)
 
   student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
 
@@ -201,7 +213,7 @@ model PRINTS {
   double_sided Boolean         @default(false)
   direction    Page_directions @default(Portrait)
   page_type    Page_types
-  state        Boolean         @default(false)
+  state        Printing_states
   pages        String
 
   student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
