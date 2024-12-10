@@ -113,6 +113,36 @@ function NotificationModal({ message, onClose }) {
   );
 }
 
+// Modal xác nhận thanh toán tất cả
+function ConfirmPayAllModal({ isOpen, onClose, onConfirm }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+        <h2 className="text-lg font-bold mb-4">Xác nhận thanh toán tất cả</h2>
+        <p className="text-gray-700">
+          Bạn có chắc chắn muốn thanh toán toàn bộ giao dịch trong giỏ hàng không?
+        </p>
+        <div className="mt-6 flex justify-end space-x-4">
+          <button
+            className="px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+            onClick={onClose}
+          >
+            Hủy
+          </button>
+          <button
+            className="px-4 py-2 text-sm text-white bg-green-500 rounded hover:bg-green-600"
+            onClick={onConfirm}
+          >
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function UserCartTable() {
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -122,6 +152,7 @@ function UserCartTable() {
   const [successMessage, setSuccessMessage] = useState("");
   const [cancelMessage, setCancelMessage] = useState("");
   const [allSuccessMessage, setAllSuccessMessage] = useState("");
+  const [isConfirmPayAllModalOpen, setConfirmPayAllModalOpen] = useState(false);
 
   // Fetch data from API
   useEffect(() => {
@@ -377,6 +408,15 @@ function UserCartTable() {
         onConfirmCancle={handleCancleModalConfirm}
       />
 
+      <ConfirmPayAllModal
+        isOpen={isConfirmPayAllModalOpen}
+        onClose={() => setConfirmPayAllModalOpen(false)}
+        onConfirm={() => {
+          setConfirmPayAllModalOpen(false); // Đóng modal
+          handlePayAll(); // Gọi hàm thanh toán toàn bộ
+        }}
+      />
+
       <NotificationModal
         message={successMessage}
         onClose={() => setSuccessMessage("")}
@@ -394,7 +434,7 @@ function UserCartTable() {
       <div className="flex justify-end mt-4">
         <button
           className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
-          onClick={handlePayAll}
+          onClick={() => setConfirmPayAllModalOpen(true)}
         >
           Thanh toán tất cả
         </button>
