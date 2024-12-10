@@ -15,6 +15,7 @@ const Header = () => {
     } else if (menuItem === "logout") {
       // Xử lý logic cho đăng xuất, ví dụ: xóa token hoặc điều hướng tới trang đăng nhập
       console.log("Đăng xuất");
+      navigate("/login");
     }
     setShowDropdown(false); // Đóng dropdown sau khi nhấn
   };

@@ -74,7 +74,9 @@ const HeaderProfile = () => {
             <li className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md">
               Hồ sơ
             </li>
-            <li className="px-4 py-2 cursor-pointer hover:bg-gray-200 hover:rounded-md">
+            <li 
+              className="px-4 py-2 cursor-pointer hover:bg-gray-200"
+              onClick={() => handleNavigate('/login')}>
               Đăng xuất
             </li>
           </ul>
