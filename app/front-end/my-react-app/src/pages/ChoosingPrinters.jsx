@@ -18,6 +18,8 @@ const ChoosingPrinters = () => {
   const initialPrintersRef = useRef([]);
 
   const handlePrinterClick = (printerID) => {
+    console.log(printerID);
+    localStorage.setItem('printer', printerID);
     navigate("/defining-printing-props");
   };
 

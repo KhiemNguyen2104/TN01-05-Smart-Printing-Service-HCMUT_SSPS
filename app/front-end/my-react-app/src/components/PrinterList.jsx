@@ -11,7 +11,7 @@ const PrinterList = ({ printers, onPrinterClick }) => {
             key={printer.printer_id}
             name={printer.printer_name}
             image={printer.image}
-            onCLick={onPrinterClick}
+            onCLick={() => {onPrinterClick(printer.printer_id)}}
           />
         ))}
       </div>

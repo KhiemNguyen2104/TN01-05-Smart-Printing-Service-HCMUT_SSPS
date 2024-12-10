@@ -114,7 +114,7 @@ export class PrinterService {
     async prints(dto: PrintingJobDto) {
         const printing_job_id = await argon.hash(dto.student_id + " " + dto.printer_id + " " + dto.file_name);
 
-        const file = this.prisma.fILE.findFirst({
+        const file = await this.prisma.fILE.findFirst({
             where: {
                 file_name: dto.file_name,
             }
