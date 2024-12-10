@@ -1,5 +1,6 @@
 import { Locations, Page_directions, Page_types, Printing_states } from "@prisma/client";
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class NewPrinterDto {
     @IsString()
@@ -63,27 +64,32 @@ export class PrintingJobDto {
 
     @IsString()
     @IsNotEmpty()
-    start_time: string
+    start_time: string = (new Date()).toISOString()
 
     @IsString()
     @IsNotEmpty()
     end_time: string
 
+    @Transform(({ value }) => Number(value))
     @IsNumber()
     @IsNotEmpty()
     no_of_copies: number
 
+    @Transform(({ value }) => value === 'true', { toClassOnly: true })
     @IsBoolean()
     @IsNotEmpty()
     double_sided: boolean = false
 
+    @Transform(({ value }) => value === 'Landscape'? Page_directions.Landscape : Page_directions.Portrait, { toClassOnly: true })
     @IsNotEmpty()
     direction: Page_directions = Page_directions.Portrait
 
     @IsNotEmpty()
+    @IsEnum(Page_types)
     page_type: Page_types = Page_types.A4
 
     @IsNotEmpty()
+    @IsEnum(Printing_states)
     state: Printing_states = Printing_states.Fail_Not_Enough_pages
 
     @IsNotEmpty()

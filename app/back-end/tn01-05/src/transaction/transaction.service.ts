@@ -186,4 +186,14 @@ export class TransactionService {
             throw error;
         }
     }
+
+    async getTransactionByUserId(user_id: string) {
+        const transaction = this.prisma.tRANSACTION.findMany({
+            where: {
+                student_id: user_id,
+            }
+        })
+
+        return transaction;
+    }
 }

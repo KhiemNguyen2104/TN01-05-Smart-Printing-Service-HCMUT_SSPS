@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TransactionDto } from './dto';
@@ -44,5 +44,11 @@ export class TransactionController {
         }
         
         return await this.transactionservice.commitTransaction(dto);
+    }
+
+    @Get('history/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async getTransactionByUserId(@Param('id') user_id: string) {
+        return this.transactionservice.getTransactionByUserId(user_id);
     }
 }

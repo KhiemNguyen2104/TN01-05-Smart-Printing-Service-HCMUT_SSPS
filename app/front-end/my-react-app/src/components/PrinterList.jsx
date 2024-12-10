@@ -8,8 +8,8 @@ const PrinterList = ({ printers, onPrinterClick }) => {
       <div className="grid grid-cols-4 gap-20 max-w-full max-md:grid-cols-1 max-md:gap-20">
         {printers.map((printer) => (
           <PrinterCard
-            key={printer.id}
-            name={printer.name}
+            key={printer.printer_id}
+            name={printer.printer_name}
             image={printer.image}
             onCLick={onPrinterClick}
           />

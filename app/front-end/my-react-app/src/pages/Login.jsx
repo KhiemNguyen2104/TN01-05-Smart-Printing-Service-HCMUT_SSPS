@@ -40,7 +40,7 @@ const Login = () => {
         console.log("User: " + JSON.stringify(user));
 
         if (user.user_id.startsWith('00')) navigate('/admin');
-        else navigate('/');
+        else navigate('/home');
       } else {
         console.error('Login failed:', response.statusText);
       }

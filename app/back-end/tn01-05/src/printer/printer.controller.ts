@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { PrinterService } from './printer.service';
 import { AuthGuard } from '@nestjs/passport';
-import { NewPrinterDto } from './dto';
+import { NewPrinterDto, PrintingJobDto } from './dto';
+import { get } from 'http';
+import { start } from 'repl';
 
 @Controller('printer')
 export class PrinterController {
@@ -47,5 +49,31 @@ export class PrinterController {
     @UseGuards(AuthGuard('jwt'))
     async getAllPrinters() {
         return this.printersevice.getAllPrinters();
+    }
+
+    @Post('prints')
+    @UseGuards(AuthGuard('jwt'))
+    async prints(@Body() dto: PrintingJobDto) {
+        return this.printersevice.prints(dto);
+    }
+
+    @Get('prints/history/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async getPrintsByTime(
+        @Param('id') student_id: string,
+        @Query('start_time') start_time: string,
+        @Query('end_time') end_time: string,
+    ) {
+        return this.printersevice.getPrintsByTime(student_id, start_time, end_time);
+    }
+
+    @Get('prints/pages/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async getPrintsPagesTime(
+        @Param('id') student_id: string,
+        @Query('start_time') start_time: string,
+        @Query('end_time') end_time: string,
+    ) {
+        return this.printersevice.getPrintsPagesTime(student_id, start_time, end_time);
     }
 }

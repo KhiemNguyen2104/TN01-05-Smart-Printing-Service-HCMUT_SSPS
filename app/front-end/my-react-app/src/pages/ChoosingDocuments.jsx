@@ -84,7 +84,7 @@ const ChoosingDocuments = () => {
 
     console.log("File to print: " + localStorage.getItem('printFile'));
 
-    // navigate("/choosing-printers");
+    navigate("/choosing-printers");
   };
 
   const handleSearch = (searchTerm) => {

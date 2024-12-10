@@ -9,6 +9,17 @@ const SearchBar = ({ onSearch, onSort }) => {
 
   const handleSortOption = (option) => {
     setShowDropdown(false); // Ẩn menu sau khi chọn
+    switch (option) {
+      case "Tên máy in":
+        onSort("name");
+        break;
+      case "Vị trí":
+        onSort("location");
+        break;
+      case "Loại máy in":
+        onSort("manufacturer");
+        break;
+    }
     console.log("Đã chọn sắp xếp:", option);
   };
 
@@ -51,25 +62,19 @@ const SearchBar = ({ onSearch, onSort }) => {
         {showDropdown && (
           <ul className="absolute top-12 right-0 bg-white text-base rounded-lg shadow-md w-48 border border-gray-300 z-10">
             <li
-              onClick={() => handleSortOption("Tên tập tin")}
+              onClick={() => handleSortOption("Tên máy in")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
               Tên máy in
             </li>
             <li
-              onClick={() => handleSortOption("Kích thước")}
+              onClick={() => handleSortOption("Vị trí")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
               Vị trí
             </li>
             <li
-              onClick={() => handleSortOption("Thời gian")}
-              className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
-            >
-              Sử dụng gần nhất
-            </li>
-            <li
-              onClick={() => handleSortOption("Loại tài liệu")}
+              onClick={() => handleSortOption("Loại máy in")}
               className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:rounded-lg"
             >
               Loại máy in
