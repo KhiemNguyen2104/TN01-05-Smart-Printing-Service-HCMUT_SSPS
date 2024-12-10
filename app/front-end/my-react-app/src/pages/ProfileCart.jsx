@@ -8,7 +8,6 @@ import UserCartTable from "../components/UserCartTable";
 
 const ProfileCart = () => {
     const navigate = useNavigate(); // Hook điều hướng
-    const [isModalOpen, setIsModalOpen] = useState(false); // State để quản lý modal
 
     const [userData, setUserData] = useState(null);
 
@@ -52,20 +51,6 @@ const ProfileCart = () => {
         }
     };
 
-    const handlePaymentClick = () => {
-        setIsModalOpen(true); // Hiển thị modal khi nhấn "Thanh toán tất cả"
-    };
-
-    const handleConfirmPayment = () => {
-        // Logic xử lý thanh toán ở đây
-        console.log("Thanh toán thành công!");
-        setIsModalOpen(false); // Đóng modal sau khi thanh toán
-    };
-
-    const handleCancelPayment = () => {
-        setIsModalOpen(false); // Đóng modal khi hủy thanh toán
-    };
-
     const menuItems = ["Thông tin cá nhân", "Số trang in", "Giao dịch", "Giỏ hàng"];
 
     return (
@@ -100,43 +85,9 @@ const ProfileCart = () => {
                         <div>
                             <UserCartTable />
                         </div>
-
-                        {/* Button Thanh toán tất cả */}
-                        <div className="mt-6 text-right">
-                            <button
-                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                onClick={handlePaymentClick}
-                            >
-                                Thanh toán tất cả
-                            </button>
-                        </div>
                     </div>
                 </div>
             </main>
-
-            {/* Modal xác nhận thanh toán */}
-            {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h3 className="text-lg font-semibold mb-4">Xác nhận thanh toán</h3>
-                        <p>Bạn có chắc chắn muốn thanh toán toàn bộ giỏ hàng không?</p>
-                        <div className="mt-6 flex justify-end gap-4">
-                            <button
-                                className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
-                                onClick={handleCancelPayment}
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                onClick={handleConfirmPayment}
-                            >
-                                Xác nhận
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

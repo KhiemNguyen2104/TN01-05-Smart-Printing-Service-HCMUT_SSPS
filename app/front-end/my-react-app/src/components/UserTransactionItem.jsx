@@ -4,7 +4,7 @@ function UserTransactionItem({ id, status, date, onDelete }) {
   const statusMap = {
     Successful: "Thành công",
     Fail_Pending: "Đang chờ",
-    Fail_Cancle: "Đã hủy",
+    Fail_Cancel: "Đã hủy",
   };
 
   const statusClasses = {
