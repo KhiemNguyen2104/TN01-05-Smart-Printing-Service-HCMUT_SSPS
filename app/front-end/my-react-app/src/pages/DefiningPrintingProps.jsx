@@ -20,7 +20,11 @@ const DefiningPrintingProps = () => {
   // Existing state for print settings
   const [orientation, setOrientation] = useState("portrait");
   const [printOption, setPrintOption] = useState("all");
+  const [pageType, setPageType] = useState("A4");
   const [pagesPerSheet, setPagesPerSheet] = useState(1);
+  const [noOfCopies, setNoOfCopies] = useState(1);
+  const [pages, setPages] = useState("");
+  const [doubleSided, setDoubleSided] = useState('false');
   const [totalPages, setTotalPages] = useState(10);
 
   // File handling state
@@ -139,23 +143,86 @@ const DefiningPrintingProps = () => {
     }
   };
 
+  const pagesValidate = (pages) => {
+    // Regular expressions for single page and range
+    const pageRegex = /^\d+$/; // Matches a single page (e.g., "11")
+    const rangeRegex = /^(\d+)-(\d+)$/; // Matches a range (e.g., "1-10")
+
+    if (!pages || typeof pages !== "string") {
+      return -1; // Invalid input
+    }
+
+    let totalPages = 0;
+
+    // Split the input by commas and trim whitespace
+    const parts = pages.split(",").map(part => part.trim());
+
+    for (const part of parts) {
+      if (pageRegex.test(part)) {
+        // Valid single page, ensure it's positive
+        const page = parseInt(part, 10);
+        if (page <= 0) return -1; // Invalid page number
+        totalPages += 1;
+      } else {
+        const rangeMatch = rangeRegex.exec(part);
+        if (rangeMatch) {
+          const start = parseInt(rangeMatch[1], 10);
+          const end = parseInt(rangeMatch[2], 10);
+
+          if (start > end || start <= 0 || end <= 0) {
+            // Invalid range: start > end or non-positive values
+            return -1;
+          }
+
+          // Add the number of pages in the range
+          totalPages += (end - start + 1);
+        } else {
+          // If it doesn't match either a page or range, it's invalid
+          return -1;
+        }
+      }
+    }
+
+    // Return the total number of pages
+    return totalPages;
+  };
+
+
+
   const handleSubmit = async () => {
     const printFile = localStorage.getItem('printFile');
     const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
-    const printerId = 'somePrinterId'; // Replace with actual printer ID
-    const pageType = "A4"; // Adjust as needed
-    const pages = getPagesToDisplay().join(','); // Page numbers
+    const printerId = localStorage.getItem('printer'); // Replace with actual printer ID
+
+    if (!pages) setPages(getPagesToDisplay().join(',')); // Page numbers
+
+    console.log("Pages: ", pages);
+
+    if (pagesValidate(pages) == -1) console.error("Invalid pages");
+
+    const spending_pages = pagesValidate(pages);
 
     const printJobData = {
       student_id: userId,
       printer_id: printerId,
       file_name: printFile,
-      no_of_copies: 1, // Adjust as needed
-      double_sided: false, // Adjust as needed
+      no_of_copies: noOfCopies, // Adjust as needed
+      double_sided: doubleSided, // Adjust as needed
       direction: orientation, // Portrait or Landscape
       page_type: pageType, // A2, A3, A4, A5, Letter
       pages: pages
     };
+
+    localStorage.setItem('pageType', pageType);
+
+    if (doubleSided) {
+      localStorage.setItem('totalPages', Math.ceil((spending_pages * 1.0) / 2));
+    }
+    else {
+      localStorage.setItem('totalPages', spending_pages);
+    }
+
+    console.log(printJobData);
 
     // Send POST request
     await fetch("http://localhost:3001/printer/prints", {
@@ -179,9 +246,11 @@ const DefiningPrintingProps = () => {
           <div className="mb-4">
             <label className="block font-medium mb-2 text-lg">Cỡ giấy</label>
             <select className="w-full mt-1 p-2 bg-white text-black border">
-              <option>A4</option>
-              <option>A3</option>
-              <option>A5</option>
+              <option onClick={() => { setPageType("A4") }}>A4</option>
+              <option onClick={() => { setPageType("A2") }}>A2</option>
+              <option onClick={() => { setPageType("A3") }}>A3</option>
+              <option onClick={() => { setPageType("A5") }}>A5</option>
+              <option onClick={() => { setPageType("Letter") }}>Letter</option>
             </select>
           </div>
 
@@ -232,8 +301,8 @@ const DefiningPrintingProps = () => {
                     {option === "all"
                       ? "Tất cả"
                       : option === "odd"
-                      ? "Chỉ trang lẻ"
-                      : "Chỉ trang chẵn"}
+                        ? "Chỉ trang lẻ"
+                        : "Chỉ trang chẵn"}
                   </span>
                 </label>
               ))}
@@ -243,6 +312,7 @@ const DefiningPrintingProps = () => {
                 type="text"
                 placeholder="e.g. 1-5, 8, 11-13"
                 className="w-full p-2 bg-white text-black border"
+                onChange={(event) => setPages(event.target.value)}
               />
             </div>
           </div>
@@ -254,6 +324,7 @@ const DefiningPrintingProps = () => {
               type="number"
               min="1"
               className="w-full p-2 bg-white text-black border"
+              onChange={(event) => setNoOfCopies(Number(event.target.value))}
             />
           </div>
 
@@ -263,6 +334,7 @@ const DefiningPrintingProps = () => {
               type="checkbox"
               className="w-5 h-5"
               id="doubleSided"
+              onChange={(event) => setDoubleSided(event.target.checked)}
             />
             <label htmlFor="doubleSided" className="ml-2 text-lg">
               Lật 2 mặt

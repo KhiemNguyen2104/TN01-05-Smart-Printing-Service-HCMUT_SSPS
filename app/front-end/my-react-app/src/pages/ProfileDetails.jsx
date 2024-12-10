@@ -21,14 +21,22 @@ const ProfileDetails = () => {
   }, []);
 
   const fetchPrintStats = async (userId) => {
+    console.log("fetchPrintStats", userId);
     const months = Array.from({ length: 12 }, (_, i) => i + 1); // [1, 2, ..., 12]
     const year = 2024;
     const promises = months.map(async (month) => {
       const start_time = `${year}/${month.toString().padStart(2, "0")}/01`;
       const end_time = `${year}/${month.toString().padStart(2, "0")}/31`;
       const url = `http://localhost:3001/printer/prints/history/${userId}?start_time=${start_time}&end_time=${end_time}`;
+      const options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      };
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, options);
         if (!response.ok) throw new Error("API request failed");
         const data = await response.json();
         return data.length; // Số lần in = độ dài của mảng trả về
