@@ -32,7 +32,7 @@ enum Printing_states {
 }
 
 enum Transaction_states {
-  Succesful
+  Successful
   Fail_Pending
   Fail_Cancel
 }
@@ -124,7 +124,11 @@ model USER {
 
 model STUDENT {
   student_id      String        @id
-  remaining_pages Int           @default(0)
+  remaining_A2_pages Int           @default(0)
+  remaining_A3_pages Int           @default(0)
+  remaining_A4_pages Int           @default(0)
+  remaining_A5_pages Int           @default(0)
+  remaining_Letter_pages Int           @default(0)
   transactions    TRANSACTION[]
 
   // Relation between `student_id` and `user_id` of USER
@@ -142,15 +146,13 @@ model SPSO {
   //Relation with USER
   user USER @relation(fields: [SPSO_id], references: [user_id], onUpdate: Cascade)
 
-  enables  ENABLES[]
-  disables DISABLES[]
-  changes  CHANGES[]
+  changes CHANGES[]
 }
 
 model TRANSACTION {
   student_id String
 
-  time        DateTime   @default(now())
+  time        DateTime           @default(now())
   page_type   Page_types
   price       Int
   no_of_pages Int
@@ -168,25 +170,23 @@ model PRINTER {
   manufacturer String?
   description  String?
   location     Locations
+  is_enable    Boolean   @default(true)
 
   // Printing jobs
   prints PRINTS[]
-
-  enables  ENABLES[]
-  disables DISABLES[]
 }
 
 model FILE {
   file_id String @id
 
-  file_name String 
+  file_name String
   file_type File_types
   file_size Int
 
-  @@unique([file_name, file_type])
-
   uploads UPLOADS[]
   prints  PRINTS[]
+
+  @@unique([file_name, file_type])
 }
 
 model UPLOADS {
@@ -251,52 +251,6 @@ model PERMITTED_TYPE {
   sp SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id], onUpdate: Cascade)
 
   @@id([SP_id, file_type])
-}
-
-model ENABLES {
-  SPSO_id    String
-  printer_id String
-
-  spso    SPSO    @relation(fields: [SPSO_id], references: [SPSO_id], onUpdate: Cascade)
-  printer PRINTER @relation(fields: [printer_id], references: [printer_id], onUpdate: Cascade)
-
-  enables_timestamp ENABLES_TIMESTAMP[]
-
-  @@id([SPSO_id, printer_id])
-}
-
-model ENABLES_TIMESTAMP {
-  SPSO_id    String
-  printer_id String
-
-  time DateTime @default(now())
-
-  enables ENABLES @relation(fields: [SPSO_id, printer_id], references: [SPSO_id, printer_id], onUpdate: Cascade)
-
-  @@id([SPSO_id, printer_id, time])
-}
-
-model DISABLES {
-  SPSO_id    String
-  printer_id String
-
-  spso    SPSO    @relation(fields: [SPSO_id], references: [SPSO_id], onUpdate: Cascade)
-  printer PRINTER @relation(fields: [printer_id], references: [printer_id], onUpdate: Cascade)
-
-  disables_timestamp DISABLES_TIMESTAMP[]
-
-  @@id([SPSO_id, printer_id])
-}
-
-model DISABLES_TIMESTAMP {
-  SPSO_id    String
-  printer_id String
-
-  time DateTime @default(now())
-
-  disables DISABLES @relation(fields: [SPSO_id, printer_id], references: [SPSO_id, printer_id], onUpdate: Cascade)
-
-  @@id([SPSO_id, printer_id, time])
 }
 
 model CHANGES {

@@ -9,6 +9,20 @@ const SearchBar = ({ onSearch, onSort }) => {
 
   const handleSortOption = (option) => {
     setShowDropdown(false); // Ẩn menu sau khi chọn
+    switch (option) {
+      case "Tên tập tin":
+        onSort("name");
+        break;
+      case "Kích thước":
+        onSort("size");
+        break;
+      case "Thời gian":
+        onSort("date");
+        break;
+      case "Loại tài liệu":
+        onSort("type");
+        break;
+    }
     console.log("Đã chọn sắp xếp:", option);
   };
 

@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/user.dto';
 import * as argon from 'argon2';
+import { Page_types } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -14,6 +15,9 @@ export class UserService {
                 where: {
                     user_id: in_user_id,
                 },
+                include: {
+                    students: true,
+                }
             })
 
             delete user.hash_key;
@@ -99,6 +103,7 @@ export class UserService {
     async findStudentByRemainingPages(
         floor: number,
         ceil: number,
+        type: Page_types,
         in_orderBy: undefined | "student_id" | "remaining_pages" = undefined,
         asc: boolean = true,
     ): Promise<any> {
@@ -107,10 +112,26 @@ export class UserService {
 
             const student = await this.prisma.sTUDENT.findMany({
                 where: {
-                    remaining_pages: {
+                    ...(type == Page_types.A2 && {remaining_A2_pages: {
                         gte: floor,
                         lte: ceil,
-                    }
+                    }}),
+                    ...(type == Page_types.A3 && {remaining_A3_pages: {
+                        gte: floor,
+                        lte: ceil,
+                    }}),
+                    ...(type == Page_types.A4 && {remaining_A4_pages: {
+                        gte: floor,
+                        lte: ceil,
+                    }}),
+                    ...(type == Page_types.A5 && {remaining_A5_pages: {
+                        gte: floor,
+                        lte: ceil,
+                    }}),
+                    ...(type == Page_types.Letter && {remaining_Letter_pages: {
+                        gte: floor,
+                        lte: ceil,
+                    }})
                 },
                 ...(in_orderBy && {
                     orderBy: {
@@ -173,4 +194,37 @@ export class UserService {
             throw error;
         }
     }
+
+    async getAllFiles(user_id: string) {
+        return await this.prisma.uSER.findUnique({
+            where: {
+                user_id: user_id,
+            },
+            select: {
+                students: {
+                    select: {
+                        student_id: true,
+                        remaining_A2_pages: true,
+                        remaining_A3_pages: true,
+                        remaining_A4_pages: true,
+                        remaining_A5_pages: true,
+                        remaining_Letter_pages: true,
+                        upload: {
+                            select: {
+                                time: true,
+                                file: {
+                                    select: {
+                                        file_id: true,
+                                        file_name: true,
+                                        file_type: true,
+                                        file_size: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }        
 }

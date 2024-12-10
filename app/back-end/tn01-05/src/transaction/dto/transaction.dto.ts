@@ -8,7 +8,7 @@ export class TransactionDto {
 
     @IsString()
     @IsNotEmpty()
-    time: string
+    time: string = (new Date()).toISOString()
 
     @IsNotEmpty()
     page_type: Page_types
@@ -17,5 +17,6 @@ export class TransactionDto {
     @IsNumber()
     no_of_pages: number
 
-    state: Transaction_states
+    @IsNotEmpty()
+    state: Transaction_states = Transaction_states.Fail_Pending
 }

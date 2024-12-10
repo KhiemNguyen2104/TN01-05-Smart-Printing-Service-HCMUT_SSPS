@@ -1,5 +1,5 @@
-import { Locations } from "@prisma/client";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Locations, Page_directions, Page_types, Printing_states } from "@prisma/client";
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class NewPrinterDto {
     @IsString()
@@ -48,11 +48,7 @@ export class UpdatePrinterDto {
     location?: string
 }
 
-export class PrintingJob {
-    @IsString()
-    @IsNotEmpty()
-    printing_job_id: string
-
+export class PrintingJobDto {
     @IsString()
     @IsNotEmpty()
     student_id: string
@@ -63,33 +59,41 @@ export class PrintingJob {
 
     @IsString()
     @IsNotEmpty()
+    file_name: string
+
+    @IsString()
+    @IsNotEmpty()
     start_time: string
 
     @IsString()
     @IsNotEmpty()
     end_time: string
 
-    // @IsString()
-    // @IsNotEmpty()
-    // printer_id: string
+    @IsNumber()
+    @IsNotEmpty()
+    no_of_copies: number
 
-    // @IsString()
-    // @IsNotEmpty()
-    // printer_id: string
+    @IsBoolean()
+    @IsNotEmpty()
+    double_sided: boolean = false
 
-    // @IsString()
-    // @IsNotEmpty()
-    // printer_id: string
+    @IsNotEmpty()
+    direction: Page_directions = Page_directions.Portrait
 
-    // @IsString()
-    // @IsNotEmpty()
-    // printer_id: string
+    @IsNotEmpty()
+    page_type: Page_types = Page_types.A4
 
-    // @IsString()
-    // @IsNotEmpty()
-    // printer_id: string
+    @IsNotEmpty()
+    state: Printing_states = Printing_states.Fail_Not_Enough_pages
 
-    // @IsString()
-    // @IsNotEmpty()
-    // printer_id: string
+    @IsNotEmpty()
+    @IsString()
+    pages: string
+
+    constructor(partial?: Partial<PrintingJobDto>) {
+        Object.assign(this, partial);
+        if (!this.end_time) {
+            this.end_time = this.start_time; // Set end_time to start_time if it's not provided
+        }
+    }
 }

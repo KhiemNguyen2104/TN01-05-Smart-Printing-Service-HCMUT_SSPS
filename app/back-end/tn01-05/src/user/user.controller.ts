@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { query, Request } from 'express';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/user.dto';
+import { Page_types } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -59,13 +60,14 @@ export class UserController {
     async findStudentByRemainingPages(
         @Query('floor') floor: string,
         @Query('ceil') ceil: string,
+        @Query('type') type: Page_types,
         @Query('orderBy') orderBy: undefined | "student_id" | "remaining_pages",
         @Query('acs') acs: string
     ) {
         let flag = true;
         if (acs == 'false') flag = false
         
-        return await this.userservice.findStudentByRemainingPages(Number(floor), Number(ceil), orderBy, flag);
+        return await this.userservice.findStudentByRemainingPages(Number(floor), Number(ceil), type, orderBy, flag);
     }
 
     @Get('spso/:id')
@@ -80,5 +82,11 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'))
     async updateUser(@Body() dto: UpdateUserDto) {
         return await this.userservice.updateUser(dto);
+    }
+
+    @Get('files/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async getAllFiles(@Param('id') student_id: string) {
+        return this.userservice.getAllFiles(student_id);
     }
 }

@@ -16,7 +16,7 @@ const FileList = ({ files, onFileClick }) => {
           icon={file.icon}
           fileName={file.fileName}
           date={file.date}
-          onClick={() => onFileClick(file.id)}
+          onClick={() => onFileClick(file.fileName)}
         />
       ))}
     </div>

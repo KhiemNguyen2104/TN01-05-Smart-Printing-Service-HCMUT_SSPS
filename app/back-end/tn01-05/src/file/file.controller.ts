@@ -41,7 +41,6 @@ export class FileController {
         @UploadedFile() file: Express.Multer.File,
         @Body() body: { student_id: string }
     ) {
-        console.log(file);
 
         let type = undefined;
 

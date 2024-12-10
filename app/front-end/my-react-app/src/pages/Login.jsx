@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -27,23 +27,23 @@ const Login = () => {
         const result = await response.json();
         console.log('Login successful:', result);
         localStorage.setItem('token', result.access_token);
+
+        const current_user = await fetch('http://localhost:3001/user/current-user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          }
+        });
+        const user = await current_user.json();
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        console.log("User: " + JSON.stringify(user));
+
+        if (user.user_id.startsWith('00')) navigate('/admin');
+        else navigate('/');
       } else {
         console.error('Login failed:', response.statusText);
       }
-
-      const current_user = await fetch('http://localhost:3001/user/current-user', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
-        }
-      });
-      const user = await current_user.json();
-      localStorage.setItem('currentUser', user);
-      console.log(user);
-
-      if (user.user_id.startsWith('00')) navigate('/admin');
-      else navigate('/');
     } catch (error) {
       console.error('An error occurred:', error);
     }

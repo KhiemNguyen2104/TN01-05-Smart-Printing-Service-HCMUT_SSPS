@@ -1,7 +1,8 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Put, UseGuards } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { AuthGuard } from '@nestjs/passport';
 import { TransactionDto } from './dto';
+import { Page_types, Transaction_states } from '@prisma/client';
 
 @Controller('transaction')
 export class TransactionController {
@@ -9,9 +10,39 @@ export class TransactionController {
 
     @Post('create')
     @UseGuards(AuthGuard('jwt'))
-    async createTransaction(@Body() dto: TransactionDto) {
-        console.log(dto);
+    async createTransaction(@Body() data: {
+        student_id: string,
+        no_of_pages: string,
+        page_type: Page_types,
+    }) {
+        const dto: TransactionDto = {
+            student_id: data.student_id,
+            no_of_pages: Number(data.no_of_pages),
+            page_type: data.page_type,
+            time: (new Date()).toISOString(),
+            state: Transaction_states.Fail_Pending,
+        }
 
         return this.transactionservice.createTransaction(dto);
+    }
+
+    @Put('commit')
+    @UseGuards(AuthGuard('jwt'))
+    async commitTransaction(@Body() data: {
+        student_id: string,
+        no_of_pages: string,
+        page_type: Page_types,
+        state: Transaction_states,
+        time: string,
+    }) {
+        const dto: TransactionDto = {
+            student_id: data.student_id,
+            no_of_pages: Number(data.no_of_pages),
+            page_type: data.page_type,
+            time: data.time,
+            state: data.state,
+        }
+        
+        return await this.transactionservice.commitTransaction(dto);
     }
 }

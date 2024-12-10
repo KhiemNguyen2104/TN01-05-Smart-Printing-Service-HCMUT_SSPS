@@ -43,5 +43,9 @@ export class PrinterController {
         return this.printersevice.findPrinterByManufacturer(manufacturer, orderBy, flag);
     }
 
-
+    @Get('all')
+    @UseGuards(AuthGuard('jwt'))
+    async getAllPrinters() {
+        return this.printersevice.getAllPrinters();
+    }
 }
