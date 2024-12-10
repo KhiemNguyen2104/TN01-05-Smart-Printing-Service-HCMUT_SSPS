@@ -93,7 +93,8 @@ function UserCartTable() {
               id: `TR${index + 1}`,
               page_type: transaction.page_type,
               quantity: transaction.no_of_pages,
-              date: new Date(transaction.time).toLocaleString(),
+              time: new Date(transaction.time).toISOString(),
+              date: new Date(transaction.time).toLocaleString(), 
               price: transaction.price,
             }));
           setCart(filteredData);
@@ -133,14 +134,14 @@ function UserCartTable() {
       return;
     }
 
-    console.log(transaction.date);
+    console.log(transaction.time);
 
     const bodyData = {
       student_id: currentUser.user_id,
       no_of_pages: transaction.quantity,
       page_type: transaction.page_type,
       state: "Successful",
-      time: new Date(transaction.date),
+      time: transaction.time,
     }
 
     console.log("Body data:", JSON.stringify(bodyData));
