@@ -16,6 +16,7 @@ import HomeAdmin from "./pages/HomeAdmin";
 import FileListPrinciples from "./pages/FileListPrinciples";
 import ManagePrinter from "./pages/ManagePrinter";
 import Login from "./pages/Login";
+import ManagePrintingHistory from "./pages/ManagePrintingHistory";
 
 
 const App = () => {
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/admin" element={<HomeAdmin />} />
         <Route path="/principle" element={<FileListPrinciples />} />
         <Route path="/manage" element={<ManagePrinter />} />
+        <Route path="/manage-printing-history" element={<ManagePrintingHistory />} />
         <Route path="/default" element={<DefautPageSet />} />
         <Route path="/choosing-documents" element={<ChoosingDocuments />} />
         <Route path="/choosing-printers" element={<ChoosingPrinters />} />

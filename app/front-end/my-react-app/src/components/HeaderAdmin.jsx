@@ -47,7 +47,7 @@ const HeaderAdmin = () => {
           HỆ THỐNG
         </button>
         <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
-        onClick={() => handleNavigate("/printing-history")}  >
+        onClick={() => handleNavigate("/manage-printing-history")}  >
           {/* Tăng kích thước chữ */}
           LỊCH SỬ IN ẤN
         </button>
@@ -80,7 +80,7 @@ const HeaderAdmin = () => {
             </li>
             <li 
               className="px-4 py-2 cursor-pointer hover:bg-gray-200"
-              onClick={() => handleNavigate('/login')}>
+              onClick={() => handleNavigate('/')}>
               Đăng xuất
             </li>
           </ul>

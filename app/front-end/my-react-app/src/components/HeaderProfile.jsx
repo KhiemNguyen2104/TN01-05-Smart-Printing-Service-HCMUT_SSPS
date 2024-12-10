@@ -36,7 +36,7 @@ const HeaderProfile = () => {
       <div className="flex items-center gap-20 mx-auto">
         <button 
             className="text-xl sm:text-xl font-bold text-white hover:opacity-80"
-            onClick={() => handleNavigate("/")}  >
+            onClick={() => handleNavigate("/home")}  >
           
           {/* Tăng kích thước chữ */}
           TRANG CHỦ
@@ -76,7 +76,7 @@ const HeaderProfile = () => {
             </li>
             <li 
               className="px-4 py-2 cursor-pointer hover:bg-gray-200"
-              onClick={() => handleNavigate('/login')}>
+              onClick={() => handleNavigate('/')}>
               Đăng xuất
             </li>
           </ul>
