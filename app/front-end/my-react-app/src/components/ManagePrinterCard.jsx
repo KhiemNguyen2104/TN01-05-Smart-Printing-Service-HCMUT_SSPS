@@ -28,13 +28,13 @@ const PrinterCard = ({ name, image, state, onToggle }) => {
             onClick={onToggle} // Call the toggle handler
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 
                       ${
-                        state === "on"
+                        state
                           ? "bg-[#00A65A] hover:bg-green-600"
                           : "bg-[#DD4B39] hover:bg-red-600"
                       }
                       hover:scale-105 hover:shadow-md`}
           >
-            {state === "on" ? "Bật" : "Tắt"}
+            {state ? "Bật" : "Tắt"}
           </button>
         </div>
       </div>

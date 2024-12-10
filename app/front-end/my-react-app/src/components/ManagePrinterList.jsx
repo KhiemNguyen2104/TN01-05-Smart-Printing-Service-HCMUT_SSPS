@@ -8,11 +8,11 @@ const PrinterList = ({ printers, onToggle }) => {
         <div className="grid grid-cols-4 gap-20 max-w-full max-md:grid-cols-1 max-md:gap-20">
           {printers.map((printer) => (
             <PrinterCard
-              key={printer.id}
-              name={printer.name}
+              key={printer.printer_id}
+              name={printer.printer_name}
               image={printer.image}
-              state={printer.state}
-              onToggle={() => onToggle(printer.id)} // Pass the printer ID to the handler
+              state={printer.is_enable}
+              onToggle={() => onToggle(printer.printer_id)} // Pass the printer ID to the handler
             />
           ))}
         </div>

@@ -1,27 +1,57 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import UserTransactionItem from "./UserTransactionItem";
 import UserTransactionSearchBar from "./UserTransactionSearchBar";
 
 function UserTransactionTable() {
-  const [transactions, setTransactions] = React.useState([
-    { id: "TR00001", status: "Thành công", date: "13/10/2024" },
-    { id: "TR00002", status: "Đang xử lý", date: "14/10/2024" },
-    { id: "TR00003", status: "Thất bại", date: "15/10/2024" },
-    { id: "TR00004", status: "Thành công", date: "16/10/2024" },
-    { id: "TR00005", status: "Đang xử lý", date: "17/10/2024" },
-    { id: "TR00006", status: "Thành công", date: "18/10/2024" },
-  ]);
+  const [transactions, setTransactions] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [showModal, setShowModal] = React.useState(false);
-  const [selectedTransaction, setSelectedTransaction] = React.useState(null);
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const current_user = JSON.parse(localStorage.getItem("currentUser"));
+      if (!current_user) {
+        console.error("No current user found in localStorage");
+        return;
+      }
 
-  // Xử lý tìm kiếm
-  const filteredTransactions = transactions.filter((transaction) =>
-    Object.values(transaction).some((value) =>
-      value.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+      const url = `http://localhost:3001/transaction/history/${current_user.user_id}`;
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const formattedData = data.map((transaction, index) => ({
+            id: `T${index + 1}`,
+            status: transaction.state,
+            date: new Date(transaction.time).toLocaleString(),
+          }));
+          setTransactions(formattedData);
+        } else {
+          console.error("Failed to fetch transactions:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  const filteredTransactions = transactions
+    ? transactions.filter((transaction) =>
+        Object.values(transaction).some((value) =>
+          String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    : [];
 
   const handleSearch = (term) => {
     setSearchTerm(term);
@@ -29,7 +59,7 @@ function UserTransactionTable() {
 
   const handleDelete = (id) => {
     setTransactions(transactions.filter((transaction) => transaction.id !== id));
-    setShowModal(false); // Đóng modal sau khi xóa
+    setShowModal(false);
   };
 
   const openModal = (transaction) => {
@@ -44,12 +74,9 @@ function UserTransactionTable() {
 
   return (
     <div className="flex flex-col space-y-6">
-      {/* Search Bar */}
       <div className="p-4 bg-gray-100 rounded-lg shadow">
         <UserTransactionSearchBar onSearch={handleSearch} />
       </div>
-
-      {/* Transaction List */}
       <div className="bg-white rounded-lg shadow">
         <table className="w-full text-center border-collapse">
           <thead>
@@ -61,7 +88,7 @@ function UserTransactionTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredTransactions.length > 0 ? (
+            {filteredTransactions && filteredTransactions.length > 0 ? (
               filteredTransactions.map((transaction) => (
                 <UserTransactionItem
                   key={transaction.id}
@@ -74,7 +101,7 @@ function UserTransactionTable() {
             ) : (
               <tr>
                 <td colSpan="4" className="p-4 text-gray-500">
-                  Không tìm thấy giao dịch
+                  Không có giao dịch nào
                 </td>
               </tr>
             )}
@@ -82,7 +109,6 @@ function UserTransactionTable() {
         </table>
       </div>
 
-      {/* Modal Xác nhận */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-96">
