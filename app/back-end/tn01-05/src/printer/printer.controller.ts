@@ -82,4 +82,16 @@ export class PrinterController {
     ) {
         return this.printersevice.getPrintsPagesTime(student_id, start_time, end_time);
     }
+
+    @Put('enables/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async enables(@Param('id') printer_id: string) {
+        return this.printersevice.enables(printer_id);
+    }
+
+    @Put('disables/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async disables(@Param('id') printer_id: string) {
+        return this.printersevice.disables(printer_id);
+    }
 }

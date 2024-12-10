@@ -15,7 +15,7 @@ const ChoosingDocuments = () => {
 
   const getFileIcon = (fileName) => {
     const fileExtension = fileName.split('.').pop().toLowerCase();
-  
+
     // Define icons for different file types
     const icons = {
       pdf: "https://cdn.builder.io/api/v1/image/assets/TEMP/e0900c012f911ca7632783c1a6a7ad126071fd3750ae83fc23de92462bd7ff19?placeholderIfAbsent=true&apiKey=5d88e23e39534e2998da369f1c9984ec",
@@ -27,7 +27,7 @@ const ChoosingDocuments = () => {
       pptx: "https://cdn.builder.io/api/v1/image/assets/TEMP/7397a754eae4f3da3b416e5d7b3b69ef5a9d07b142e5bdd831a8869650d91ffb?placeholderIfAbsent=true&apiKey=5d88e23e39534e2998da369f1c9984ec",
       default: "https://cdn.builder.io/api/v1/image/assets/TEMP/e0900c012f911ca7632783c1a6a7ad126071fd3750ae83fc23de92462bd7ff19?placeholderIfAbsent=true&apiKey=5d88e23e39534e2998da369f1c9984ec", // Fallback icon
     };
-  
+
     // Return the appropriate icon or a default if no match is found
     return icons[fileExtension] || icons.default;
   };
