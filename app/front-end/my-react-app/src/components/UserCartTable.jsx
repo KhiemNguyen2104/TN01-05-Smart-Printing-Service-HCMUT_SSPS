@@ -87,13 +87,14 @@ function UserCartTable() {
 
         if (response.ok) {
           const data = await response.json();
-          const filteredData = data
+const filteredData = data
             .filter((transaction) => transaction.state === "Fail_Pending")
             .map((transaction, index) => ({
               id: `TR${index + 1}`,
               page_type: transaction.page_type,
               quantity: transaction.no_of_pages,
-              date: new Date(transaction.time).toLocaleString(),
+              time: new Date(transaction.time).toISOString(),
+              date: new Date(transaction.time).toLocaleString(), 
               price: transaction.price,
             }));
           setCart(filteredData);
@@ -133,14 +134,14 @@ function UserCartTable() {
       return;
     }
 
-    console.log(transaction.date);
+    console.log(transaction.time);
 
     const bodyData = {
       student_id: currentUser.user_id,
       no_of_pages: transaction.quantity,
       page_type: transaction.page_type,
       state: "Successful",
-      time: new Date(transaction.date),
+      time: transaction.time,
     }
 
     console.log("Body data:", JSON.stringify(bodyData));
@@ -182,7 +183,7 @@ function UserCartTable() {
         <table className="w-full text-center border-collapse">
           <thead>
             <tr className="border-b bg-gray-50">
-              <th className="p-4 font-medium text-gray-600">Mã giao dịch</th>
+            <th className="p-4 font-medium text-gray-600">Mã giao dịch</th>
               <th className="p-4 font-medium text-gray-600">Loại giấy</th>
               <th className="p-4 font-medium text-gray-600">Số lượng</th>
               <th className="p-4 font-medium text-gray-600">Ngày giao dịch</th>

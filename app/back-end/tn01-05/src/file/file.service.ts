@@ -101,6 +101,21 @@ export class FileService {
         return data;
     }
 
+    async findFileById(in_file_id) {
+        try {
+            const file = await this.prisma.fILE.findUnique({
+                where: {
+                    file_id: in_file_id,
+                }
+            })
+
+            return file;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
     async findFileByName(
         in_file_name: string,
         in_orderBy: undefined | "file_name" | "file_type" | "file_size" = undefined,
