@@ -1,5 +1,6 @@
 import { Page_types, Transaction_states } from "@prisma/client";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class TransactionDto {
     @IsString()
@@ -11,6 +12,7 @@ export class TransactionDto {
     time: string = (new Date()).toISOString()
 
     @IsNotEmpty()
+    @IsEnum(Page_types)
     page_type: Page_types
 
     @IsNotEmpty()
@@ -18,5 +20,6 @@ export class TransactionDto {
     no_of_pages: number
 
     @IsNotEmpty()
+    @IsEnum(Transaction_states)
     state: Transaction_states = Transaction_states.Fail_Pending
 }
