@@ -15,6 +15,7 @@ export class TransactionDto {
     @IsEnum(Page_types)
     page_type: Page_types
 
+    @Transform(({ value }) => Number(value))
     @IsNotEmpty()
     @IsNumber()
     no_of_pages: number

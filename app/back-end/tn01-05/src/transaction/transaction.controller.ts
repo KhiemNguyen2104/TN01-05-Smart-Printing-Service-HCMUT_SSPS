@@ -28,21 +28,7 @@ export class TransactionController {
 
     @Put('commit')
     @UseGuards(AuthGuard('jwt'))
-    async commitTransaction(@Body() data: {
-        student_id: string,
-        no_of_pages: string,
-        page_type: Page_types,
-        state: Transaction_states,
-        time: string,
-    }) {
-        const dto: TransactionDto = {
-            student_id: data.student_id,
-            no_of_pages: Number(data.no_of_pages),
-            page_type: data.page_type,
-            time: data.time,
-            state: data.state,
-        }
-        
+    async commitTransaction(@Body() dto: TransactionDto) {
         return await this.transactionservice.commitTransaction(dto);
     }
 
