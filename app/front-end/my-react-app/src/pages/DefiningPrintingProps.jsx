@@ -2,13 +2,19 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import NextButton from "../components/NextButton";
 import BackButton from "../components/BackButton";
-import { getDocument, GlobalWorkerOptions, version } from "pdfjs-dist";  // Import pdfjs from the legacy path
 import { useNavigate } from "react-router-dom";
-// import { pdfjs } from "pdfjs-dist";
-
-GlobalWorkerOptions.workerSrc = "../pdf.worker.min.js";
+import { Document, Page } from 'react-pdf';
+import { pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 
 const DefiningPrintingProps = () => {
+  useEffect(() => {
+    // Ensure the workerSrc is set after the component mounts
+    pdfjs.GlobalWorkerOptions.workerSrc = "https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs";
+    console.log(pdfjs.GlobalWorkerOptions.workerSrc); // Check if the URL is set correctly
+  }, []);
+
   const navigate = useNavigate(); // Hook điều hướng
 
   // Existing state for print settings
@@ -21,8 +27,7 @@ const DefiningPrintingProps = () => {
   const [file, setFile] = useState(null);
   const [fileUrl, setFileUrl] = useState("");
   const [fileType, setFileType] = useState("");
-  const [pdfDoc, setPdfDoc] = useState(null); // State to store PDF document
-  const [pageNumber, setPageNumber] = useState(1);
+  const [fileData, setFileData] = useState(null);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -33,26 +38,51 @@ const DefiningPrintingProps = () => {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      if (fileUrl) {
-        URL.revokeObjectURL(fileUrl);
+  const fetchFileForPreview = async () => {
+    const printFile = localStorage.getItem('printFile');
+    const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
+    // console.log(printFile, userId);
+    const response = await fetch(`http://localhost:3001/file/print?file_name=${printFile}&student_id=${userId}`, {
+      method: 'GET',
+      headers: {
+        "Content-type": "application/pdf",
+        Authorization: "Bearer " + localStorage.getItem('token'),
       }
-    };
-  }, [fileUrl]);
+    });
+    setFileType('application/pdf');
+    // console.log("Type: ", fileType);
+    // console.log(response.text());
+    const fileBlob = await response.blob();
+    const fileUrl = URL.createObjectURL(fileBlob);
+    // console.log("URL: ", fileUrl);
+    setFileUrl(fileUrl);
+    const pdfDocument = await loadPdf(fileUrl)
+      .then((pdfFile) => {
+        // console.log("File: ", pdfFile._pdfInfo.numPages);
+        setFile(pdfFile);
+        setTotalPages(pdfFile._pdfInfo.numPages);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    // Set the total number of pages
+  };
+
+  const loadPdf = (fileUrl) => {
+    return new Promise((resolve, reject) => {
+      const loadingTask = window.pdfjsLib.getDocument(fileUrl);
+      loadingTask.promise
+        .then(resolve)
+        .catch(reject);
+    });
+  };
 
   useEffect(() => {
-    if (file && fileType === "application/pdf") {
-      const fileReader = new FileReader();
-      fileReader.onload = function () {
-        const typedarray = new Uint8Array(this.result);
-        getDocument(typedarray).promise.then(setPdfDoc);
-      };
-      fileReader.readAsArrayBuffer(file);
-    }
-  }, [file]);
+    fetchFileForPreview();
+  }, []);
 
   const getPagesToDisplay = () => {
+    // console.log("Total pages: ", totalPages);
     let pages = Array.from({ length: totalPages }, (_, i) => i + 1);
     if (printOption === "odd") pages = pages.filter((page) => page % 2 !== 0);
     if (printOption === "even") pages = pages.filter((page) => page % 2 === 0);
@@ -77,154 +107,67 @@ const DefiningPrintingProps = () => {
       );
     }
 
-    if (fileType === "application/pdf") {
-      return (
-        <div className="h-full w-full">
-          <canvas id="pdf-canvas" />
-        </div>
-      );
-    }
-
-    if (fileType === "text/plain") {
-      return (
-        <div className="h-full w-full">
-          <iframe 
-            src={fileUrl}
-            className="w-full h-full"
-            title="Text Preview"
-          />
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">
-          File type not supported for preview. Please use PDF or TXT files.
-        </p>
-      </div>
-    );
-  };
-
-  const renderPage = () => {
-    if (pdfDoc) {
-      pdfDoc.getPage(pageNumber).then((page) => {
-        const scale = 1.5;
-        const viewport = page.getViewport({ scale });
-
-        const canvas = document.getElementById("pdf-canvas");
-        const context = canvas.getContext("2d");
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        page.render({
-          canvasContext: context,
-          viewport: viewport,
-        });
-      });
+    switch (fileType) {
+      case 'application/pdf':
+        return (
+          <div className="flex flex-col items-center justify-center">
+            <Document file={fileUrl}>
+              {getPagesToDisplay().map((pageNumber) => (
+                <Page key={pageNumber} pageNumber={pageNumber} />
+              ))}
+            </Document>
+          </div>
+        );
+      case 'text/plain':
+        return (
+          <div className="h-full w-full">
+            <iframe
+              src={fileUrl}
+              className="w-full h-full"
+              title="Text Preview"
+            />
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">
+              File type not supported for preview. Please use PDF or TXT files.
+            </p>
+          </div>
+        );
     }
   };
 
-  useEffect(() => {
-    renderPage();
-  }, [pdfDoc, pageNumber]);
+  const handleSubmit = async () => {
+    const printFile = localStorage.getItem('printFile');
+    const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
+    const printerId = 'somePrinterId'; // Replace with actual printer ID
+    const pageType = "A4"; // Adjust as needed
+    const pages = getPagesToDisplay().join(','); // Page numbers
 
-  const handleNextButtonClick = async () => {
-    const studentId = JSON.parse(localStorage.getItem("currentUser")).user_id;
-    const printerId = 'printerId'; // Replace this with actual printer ID logic
-    const fileName = localStorage.getItem("printFile");
-    const noOfCopies = document.querySelector('input[type="number"]').value; // Assuming this is the input for copies
-    const doubleSided = document.querySelector('input[type="checkbox"]').checked; // Assuming this is the checkbox for double-sided
-    const direction = orientation; // Portrait or Landscape
-    const pageType = pagesPerSheet; // A2, A3, A4, A5, Letter
-    const pages = getPagesToDisplay().join(","); // Page range: 1-10, 12, 20-21
-
-    // Construct the body for the POST request
-    const requestBody = {
-      student_id: studentId,
+    const printJobData = {
+      student_id: userId,
       printer_id: printerId,
-      file_name: fileName,
-      no_of_copies: noOfCopies,
-      double_sided: doubleSided.toString(),
-      direction: direction,
-      page_type: pageType,
+      file_name: printFile,
+      no_of_copies: 1, // Adjust as needed
+      double_sided: false, // Adjust as needed
+      direction: orientation, // Portrait or Landscape
+      page_type: pageType, // A2, A3, A4, A5, Letter
       pages: pages
     };
 
-    // Make the HTTP request to store the print job
-    try {
-      const response = await fetch("http://localhost:3001/printer/prints", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        // Proceed to the next page
-        navigate("/buy-printing-pages");
-      } else {
-        // Handle error
-        console.error("Error storing the print job:", await response.text());
-      }
-    } catch (error) {
-      console.error("Error during fetch:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!file) {
-      const fetchFileForPreview = async () => {
-        const studentId = JSON.parse(localStorage.getItem("currentUser")).user_id;
-        const fileName = localStorage.getItem("printFile");
-        const fileUrl = `http://localhost:3001/file/print?file_name=${fileName}&student_id=${studentId}`;
-
-        try {
-          const response = await fetch(fileUrl, {
-            method: 'GET',
-            headers: {
-              "Content-Type":	"application/pdf",
-              Authorization: "Bearer " + localStorage.getItem('token'),
-            }
-          });
-          const fileBlob = await response.blob();
-
-          console.log("URL: ", fileUrl);
-
-          if (response.ok) {
-            const fileObjectUrl = URL.createObjectURL(fileBlob);
-            setFileUrl(fileObjectUrl);
-
-            // Fetch the number of pages from the file
-            const totalPages = await getNumberOfPages(fileBlob); // You need a function to calculate the number of pages based on the file type
-            setTotalPages(totalPages);
-          } else {
-            console.error("Failed to fetch file:", await response.text());
-          }
-        } catch (error) {
-          console.error("Error fetching file:", error);
-        }
-      };
-
-      fetchFileForPreview();
-    }
-  }, [file]);
-
-  const getNumberOfPages = (fileBlob) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.onload = function () {
-        const pdfData = new Uint8Array(this.result);
-        getDocument(pdfData).promise
-          .then((pdfDoc) => {
-            resolve(pdfDoc.numPages); // Get number of pages
-          })
-          .catch(reject); // Reject if error occurs
-      };
-      fileReader.onerror = reject;
-      fileReader.readAsArrayBuffer(fileBlob);
+    // Send POST request
+    await fetch("http://localhost:3001/printer/prints", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem('token'),
+      },
+      body: JSON.stringify(printJobData),
     });
+
+    navigate("/buy-printing-pages");
   };
 
   return (
@@ -325,10 +268,34 @@ const DefiningPrintingProps = () => {
               Lật 2 mặt
             </label>
           </div>
-
-          <NextButton onClick={handleNextButtonClick} />
         </aside>
-        <section className="w-4/5 p-6">{renderPreview()}</section>
+
+        <section className="w-4/5 bg-gray-300 flex flex-col relative overflow-hidden">
+          <div className="bg-white p-4 shadow-lg flex items-center">
+            <h1 className="my-2 text-3xl sm:text-3xl text-black font-semibold">
+              Hệ thống in{" "}
+              <span className="text-xs sm:text-sm text-neutral-400">
+                CHỈNH SỬA BẢN IN
+              </span>
+            </h1>
+            <span className="ml-auto flex items-center">
+              {file && (
+                <span className="mr-2 text-sm text-gray-600">
+                  {file.name}
+                </span>
+              )}
+            </span>
+          </div>
+
+          <div className="flex-grow bg-gray-300 overflow-auto">
+            {renderPreview()}
+          </div>
+
+          <div className="shadow-lg p-4 bg-white flex justify-between">
+            <BackButton onClick={() => window.history.back()} />
+            <NextButton onClick={handleSubmit} />
+          </div>
+        </section>
       </main>
     </div>
   );
