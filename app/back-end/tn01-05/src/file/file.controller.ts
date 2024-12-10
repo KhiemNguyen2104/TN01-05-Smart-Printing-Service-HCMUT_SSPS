@@ -100,6 +100,12 @@ export class FileController {
         return await this.fileservice.findFileByName(file_name, orderBy, flag);
     }
 
+    @Get('id/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async FindFileById(@Param('id') file_id: string) {
+        return this.fileservice.findFileById(file_id);
+    }
+
     @Get('type')
     @UseGuards(AuthGuard('jwt'))
     async FindFileByType(

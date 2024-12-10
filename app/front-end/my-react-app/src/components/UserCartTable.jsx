@@ -87,7 +87,7 @@ function UserCartTable() {
 
         if (response.ok) {
           const data = await response.json();
-          const filteredData = data
+const filteredData = data
             .filter((transaction) => transaction.state === "Fail_Pending")
             .map((transaction, index) => ({
               id: `TR${index + 1}`,
@@ -183,7 +183,7 @@ function UserCartTable() {
         <table className="w-full text-center border-collapse">
           <thead>
             <tr className="border-b bg-gray-50">
-              <th className="p-4 font-medium text-gray-600">Mã giao dịch</th>
+            <th className="p-4 font-medium text-gray-600">Mã giao dịch</th>
               <th className="p-4 font-medium text-gray-600">Loại giấy</th>
               <th className="p-4 font-medium text-gray-600">Số lượng</th>
               <th className="p-4 font-medium text-gray-600">Ngày giao dịch</th>
