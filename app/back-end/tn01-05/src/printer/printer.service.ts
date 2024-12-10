@@ -409,4 +409,26 @@ export class PrinterService {
             throw new Error("Failed to commit the print job.");
         }
     }
+
+    async enables(printer_id: string) {
+        return await this.prisma.pRINTER.update({
+            where: {
+                printer_id: printer_id,
+            },
+            data: {
+                is_enable: true,
+            }
+        })
+    }
+
+    async disables(printer_id: string) {
+        return await this.prisma.pRINTER.update({
+            where: {
+                printer_id: printer_id,
+            },
+            data: {
+                is_enable: false,
+            }
+        })
+    }
 }
