@@ -155,7 +155,7 @@ const BuyPrintingPages = () => {
             <span className="text-lg font-semibold">Loại giấy: {paperType}</span>
             <span className="text-lg font-semibold">Đơn giá: {pricePerPage} VND/trang</span>
           </div>
-          <div className="bg-gray-50 p-6 rounded-b-lg shadow-xl">
+          <div className="bg-gray-50 p-6 rounded-b-lg shadow-2xl">
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <label className="block text-lg font-medium mb-1">
