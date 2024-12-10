@@ -39,7 +39,9 @@ const ChoosingPrinters = () => {
         if (response.ok) {
           const result = await response.json();
 
-          const printersData = result.map((printer) => ({
+          const enabledPrinters = result.filter((printer) => printer.is_enable);
+
+          const printersData = enabledPrinters.map((printer) => ({
             printer_id: printer.printer_id,
             printer_name: `Máy in ${printer.manufacturer} tòa ${printer.location}`,
             image:

@@ -1,17 +1,23 @@
 import React from "react";
 
 function UserTransactionItem({ id, status, date, onDelete }) {
+  const statusMap = {
+    Successful: "Thành công",
+    Fail_Pending: "Đang chờ",
+    Fail_Cancle: "Đã hủy",
+  };
+
   const statusClasses = {
     "Thành công": "text-green-600",
-    "Đang xử lý": "text-yellow-600",
-    "Thất bại": "text-red-600",
+    "Đang chờ": "text-yellow-600",
+    "Đã hủy": "text-red-600",
   };
 
   return (
     <tr className="hover:bg-gray-50">
       <td className="p-4">{id}</td>
-      <td className={`p-4 ${statusClasses[status] || "text-gray-600"}`}>
-        {status}
+      <td className={`p-4 ${statusClasses[statusMap[status]] || "text-gray-600"}`}>
+        {statusMap[status] || "Không xác định"}
       </td>
       <td className="p-4">{date}</td>
       <td className="p-4">

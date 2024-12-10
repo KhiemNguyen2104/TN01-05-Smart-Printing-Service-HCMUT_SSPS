@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // import { Bar } from "react-chartjs-2";
 import HeaderProfile from "../components/HeaderProfile";
@@ -10,13 +10,27 @@ const ProfileCart = () => {
     const navigate = useNavigate(); // Hook điều hướng
     const [isModalOpen, setIsModalOpen] = useState(false); // State để quản lý modal
 
-    const userData = {
-        id: "2211573",
-        studentId: "2211573",
-        name: "Nguyễn Phúc Gia Khiêm",
-        email: "khiem.nguyenphucgia@hcmut.edu.vn",
-        userType: "Sinh viên",
-    };
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch("http://localhost:3001/user/current-user", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + localStorage.getItem("token"),
+                    },
+                });
+                const data = await response.json();
+                setUserData(data);
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     const handleSidebarClick = (menuItem) => {
         // Logic điều hướng dựa trên mục được chọn
@@ -71,9 +85,17 @@ const ProfileCart = () => {
                             <h2 className="text-lg text-gray-600">THÔNG TIN GIỎ HÀNG</h2>
                         </div>
 
-                        <div className="mb-6">
-                            <p><strong>ID:</strong> {userData.id}</p>
-                        </div>
+                        {userData ? (
+                            <div className="mb-6">
+                            <p><strong>ID:</strong> {userData.user_id}</p>
+                            {/* <p><strong>Mã số sinh viên:</strong> {userData.studentId}</p>
+                            <p><strong>Họ và tên:</strong> {userData.name}</p>
+                            <p><strong>Email:</strong> {userData.email}</p>
+                            <p><strong>Kiểu người dùng:</strong> {userData.userType}</p> */}
+                            </div>
+                        ) : (
+                            <p>Đang tải thông tin người dùng...</p> // Hiển thị thông báo khi userData chưa sẵn sàng
+                        )}
 
                         <div>
                             <UserCartTable />

@@ -15,6 +15,7 @@ const Header = () => {
     } else if (menuItem === "logout") {
       // Xử lý logic cho đăng xuất, ví dụ: xóa token hoặc điều hướng tới trang đăng nhập
       console.log("Đăng xuất");
+      navigate("/");
     }
     setShowDropdown(false); // Đóng dropdown sau khi nhấn
   };
@@ -38,7 +39,7 @@ const Header = () => {
 
       <div className="flex items-center gap-20 mx-auto">
         <button className="text-xl sm:text-xl font-bold text-white hover:opacity-80" 
-          onClick={() => navigate("/")}  >
+          onClick={() => navigate("/home")}  >
           
           {/* Tăng kích thước chữ */}
           TRANG CHỦ
