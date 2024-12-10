@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { PrinterService } from './printer.service';
 import { AuthGuard } from '@nestjs/passport';
-import { NewPrinterDto, PrintingJobDto } from './dto';
+import { NewPrinterDto, PrintingJobDto, PrintingJobUpdateDto } from './dto';
 import { get } from 'http';
 import { start } from 'repl';
 
@@ -54,7 +54,13 @@ export class PrinterController {
     @Post('prints')
     @UseGuards(AuthGuard('jwt'))
     async prints(@Body() dto: PrintingJobDto) {
-        return this.printersevice.prints(dto);
+        return await this.printersevice.prints(dto);
+    }
+
+    @Put('prints/commit')
+    @UseGuards(AuthGuard('jwt'))
+    async printsCommit(@Body() dto: PrintingJobUpdateDto) {
+        return await this.printersevice.printsCommit(dto);
     }
 
     @Get('prints/history/:id')

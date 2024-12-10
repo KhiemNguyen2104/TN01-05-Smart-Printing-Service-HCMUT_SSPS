@@ -103,3 +103,25 @@ export class PrintingJobDto {
         }
     }
 }
+
+export class PrintingJobUpdateDto {
+    @IsString()
+    @IsNotEmpty()
+    printing_job_id: string
+    
+    @IsString()
+    @IsNotEmpty()
+    student_id: string
+
+    @IsString()
+    @IsNotEmpty()
+    printer_id: string
+
+    @IsString()
+    @IsNotEmpty()
+    file_name: string
+
+    @IsNotEmpty()
+    @IsEnum(Printing_states)
+    state: Printing_states = Printing_states.Fail_Cancel
+}

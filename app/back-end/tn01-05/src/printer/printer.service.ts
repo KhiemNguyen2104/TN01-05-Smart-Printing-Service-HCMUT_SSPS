@@ -1,9 +1,9 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { NewPrinterDto, PrintingJobDto } from './dto';
+import { NewPrinterDto, PrintingJobDto, PrintingJobUpdateDto } from './dto';
 import * as argon from 'argon2';
 import { FileService } from 'src/file/file.service';
-import { Printing_states } from '@prisma/client';
+import { Page_types, Printing_states } from '@prisma/client';
 
 @Injectable()
 export class PrinterService {
@@ -274,6 +274,139 @@ export class PrinterService {
         catch (error) {
             console.error("Error fetching print pages by time:", error);
             throw new Error("Unable to fetch print pages by time.");
+        }
+    }
+
+    async printsCommit(dto: PrintingJobUpdateDto) {
+        try {
+            const file = await this.prisma.fILE.findFirst({
+                where: {
+                    file_name: dto.file_name,
+                }
+            });
+
+            if (!file) throw new ForbiddenException("The file does not exist");
+
+            const upload = await this.prisma.uPLOADS.findFirst({
+                where: {
+                    file_id: file.file_id,
+                    student_id: dto.student_id,
+                }
+            });
+
+            if (!upload) throw new ForbiddenException("The student has not uploaded this file");
+
+            const prints = await this.prisma.pRINTS.findUnique({
+                where: {
+                    student_id_printer_id_printing_job_id_file_id: {
+                        student_id: dto.student_id,
+                        printer_id: dto.printer_id,
+                        printing_job_id: dto.printing_job_id,
+                        file_id: (await file).file_id,
+                    }
+                },
+            });
+
+            console.log({
+                student_id: dto.student_id,
+                printer_id: dto.printer_id,
+                printing_job_id: dto.printing_job_id,
+                file_id: (await file).file_id,
+            })
+
+            if (!prints) throw new ForbiddenException("The printing job does not exist");
+
+            if (dto.state === Printing_states.Succesful) {
+                const page_type = prints.page_type;
+                const no_of_pages = this.pagesValidate(prints.pages);
+                console.log(no_of_pages);
+
+                const student = await this.prisma.sTUDENT.findUnique({
+                    where: {
+                        student_id: dto.student_id,
+                    }
+                });
+
+                if (!student) throw new ForbiddenException("Student not found");
+
+                let new_pages: number;
+                switch (page_type) {
+                    case Page_types.A2:
+                        new_pages = student.remaining_A2_pages - no_of_pages;
+                        await this.prisma.sTUDENT.update({
+                            where: {
+                                student_id: dto.student_id,
+                            },
+                            data: {
+                                remaining_A2_pages: new_pages,
+                            }
+                        });
+                        break;
+                    case Page_types.A3:
+                        new_pages = student.remaining_A3_pages - no_of_pages;
+                        await this.prisma.sTUDENT.update({
+                            where: {
+                                student_id: dto.student_id,
+                            },
+                            data: {
+                                remaining_A3_pages: new_pages,
+                            }
+                        });
+                        break;
+                    case Page_types.A4:
+                        new_pages = student.remaining_A4_pages - no_of_pages;
+                        await this.prisma.sTUDENT.update({
+                            where: {
+                                student_id: dto.student_id,
+                            },
+                            data: {
+                                remaining_A4_pages: new_pages,
+                            }
+                        });
+                        break;
+                    case Page_types.A5:
+                        new_pages = student.remaining_A5_pages - no_of_pages;
+                        await this.prisma.sTUDENT.update({
+                            where: {
+                                student_id: dto.student_id,
+                            },
+                            data: {
+                                remaining_A5_pages: new_pages,
+                            }
+                        });
+                        break;
+                    case Page_types.Letter:
+                        new_pages = student.remaining_Letter_pages - no_of_pages;
+                        await this.prisma.sTUDENT.update({
+                            where: {
+                                student_id: dto.student_id,
+                            },
+                            data: {
+                                remaining_Letter_pages: new_pages,
+                            }
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return await this.prisma.pRINTS.update({
+                where: {
+                    student_id_printer_id_printing_job_id_file_id: {
+                        student_id: dto.student_id,
+                        printer_id: dto.printer_id,
+                        printing_job_id: dto.printing_job_id,
+                        file_id: file.file_id,
+                    }
+                },
+                data: {
+                    state: dto.state,
+                }
+            });
+        } catch (error) {
+            console.error("Error committing print job:", error);
+            throw new Error("Failed to commit the print job.");
         }
     }
 }
