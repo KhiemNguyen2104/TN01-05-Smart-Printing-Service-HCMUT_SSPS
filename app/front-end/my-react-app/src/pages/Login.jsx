@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  localStorage.setItem('isPrinting', false);
+  localStorage.setItem('isPrinting', "false");
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
