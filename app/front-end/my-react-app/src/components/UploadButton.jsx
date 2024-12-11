@@ -4,6 +4,7 @@ const UploadButton = () => {
   const [showOptions, setShowOptions] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [url, setUrl] = useState("");
+  const [studentId] = useState(() => JSON.parse(localStorage.getItem("currentUser"))?.user_id);
 
   const handleUpload = () => {
     setShowOptions(!showOptions);
@@ -15,7 +16,42 @@ const UploadButton = () => {
     } else if (option === "drive") {
       setShowUrlInput(true);
     }
-    setShowOptions(false); // Đóng menu sau khi chọn
+    setShowOptions(false); // Close the menu after selection
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("student_id", studentId);
+    formData.append("file", file);
+
+    console.log(file);
+
+    try {
+      const response = await fetch("http://localhost:3001/file/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert("File uploaded successfully!");
+        console.log("Upload result:", result);
+      } else {
+        console.error("Failed to upload file:", response.statusText);
+        alert("Failed to upload file. Please try again.");
+        const errorData = await response.json();
+        console.error("Error:", errorData);
+      }
+    } catch (error) {
+      console.error("Error during file upload:", error);
+      alert("An error occurred while uploading the file.");
+    }
   };
 
   const handleUrlSubmit = () => {
@@ -64,6 +100,7 @@ const UploadButton = () => {
         id="fileInput"
         className="hidden"
         accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+        onChange={handleFileChange}
         aria-label="Chọn tài liệu để tải lên"
       />
 

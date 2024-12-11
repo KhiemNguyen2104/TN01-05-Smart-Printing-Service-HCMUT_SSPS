@@ -146,7 +146,7 @@ const DefiningPrintingProps = () => {
 
   const getStudentInfor = async () => {
     const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
-    
+
     const response = await fetch(`http://localhost:3001/user/id/${userId}`, {
       method: 'GET',
       headers: {
@@ -164,7 +164,7 @@ const DefiningPrintingProps = () => {
     else {
       console.error("Get student information fail");
     }
-  } 
+  }
 
   useEffect(() => {
     getStudentInfor();
@@ -216,7 +216,7 @@ const DefiningPrintingProps = () => {
 
 
 
-  const handleSubmit = async () => {    
+  const handleSubmit = async () => {
     const printFile = localStorage.getItem('printFile');
     const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
     const printerId = localStorage.getItem('printer'); // Replace with actual printer ID
@@ -261,7 +261,7 @@ const DefiningPrintingProps = () => {
       body: JSON.stringify(printJobData),
     });
 
-    if(!printingJob) console.error("Cannot take the printing job response");
+    if (!printingJob) console.error("Cannot take the printing job response");
     else {
       const result = await printingJob.json();
       localStorage.setItem('printingJobId', result.printing_job_id);

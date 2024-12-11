@@ -12,6 +12,8 @@ export class FileService {
         try {
             let fileId = await argon.hash(dto.file_name + " " + dto.file_type);
 
+            console.log(dto);
+
             const student = await this.prisma.sTUDENT.findUnique({
                 where: {
                     student_id: dto.student_id

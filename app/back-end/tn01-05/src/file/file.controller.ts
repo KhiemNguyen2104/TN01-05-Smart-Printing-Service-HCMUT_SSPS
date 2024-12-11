@@ -41,7 +41,7 @@ export class FileController {
         @UploadedFile() file: Express.Multer.File,
         @Body() body: { student_id: string }
     ) {
-
+        console.log(file.originalname);
         let type = undefined;
 
         switch (extname(file.originalname).substring(1) as any) {
