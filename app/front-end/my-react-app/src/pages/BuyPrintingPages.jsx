@@ -1,8 +1,29 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import { useNavigate } from "react-router-dom";
+
+const NotificationModal = ({ message, onClose }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <p className="text-lg font-medium mb-4">{message}</p>
+      <div className="flex justify-end">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={onClose}
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 const BuyPrintingPages = () => {
+  const navigate = useNavigate();
+
+  const [notificationModal, setNotificationModal] = useState({ isVisible: false, message: "" });
+  const [specialNotificationModal, setSpecialNotificationModal] = useState({ isVisible: false, message: "" });
   const [paperType, setPaperType] = useState(localStorage.getItem('pageType'));
   const [pricePerPage, setPricePerPage] = useState(300);
   const [currentPages, setCurrentPages] = useState(0);
@@ -56,23 +77,36 @@ const BuyPrintingPages = () => {
             break;
         }
       } else {
-        console.error("Lỗi khi fetch API:", response.statusText);
+        setNotificationModal({
+          isVisible: true,
+          message: `Lỗi khi fetch API: ${response.statusText}`,
+        });
       }
     } catch (error) {
-      console.error("Lỗi khi fetch dữ liệu:", error);
+      setNotificationModal({
+        isVisible: true,
+        message: `Lỗi khi fetch dữ liệu: ${error.message}`,
+      });
     }
   };
 
   const handlePrintImmediately = () => {
+    setSpecialNotificationModal({
+      isVisible: true,
+      message: "Đã in thành công!",
+    });
+  };
 
-  }
   const handleCancelTransaction = () => {
-    setIsCancelingOpen(true);
+    setSpecialNotificationModal({
+      isVisible: true,
+      message: "Đã hủy tiến trình in!",
+    });
   };
 
-  const cancelPrinting = () => {
+  // const cancelPrinting = () => {
 
-  };
+  // };
 
   const handleSidebarClick = (type) => {
     setPaperType(type);
@@ -120,15 +154,24 @@ const BuyPrintingPages = () => {
       if (response.ok) {
         const result = await response.json();
         localStorage.setItem("temp_transaction", JSON.stringify(result));
-        alert("Đơn đã được thêm vào giỏ hàng!");
+        setNotificationModal({
+          isVisible: true,
+          message: "Đơn đã được thêm vào giỏ hàng!",
+        });
         setBuyQuantity(0);
       } else {
         console.error("Lỗi khi tạo giao dịch:", response.status, response.statusText);
-        alert("Không thể tạo giao dịch. Vui lòng thử lại.");
+        setNotificationModal({
+          isVisible: true,
+          message: "Không thể tạo giao dịch. Vui lòng thử lại.",
+        });
       }
     } catch (error) {
       console.error("Lỗi khi tạo giao dịch:", error);
-      alert("Có lỗi xảy ra. Vui lòng thử lại.");
+      setNotificationModal({
+        isVisible: true,
+        message: `Có lỗi xảy ra. Vui lòng thử lại: ${error.message}`,
+      });
     } finally {
       setIsConfirmationOpen(false);
     }
@@ -155,7 +198,10 @@ const BuyPrintingPages = () => {
       const tempTransaction = JSON.stringify(result);
 
       if (!tempTransaction) {
-        alert("Không có giao dịch nào để thực hiện!");
+        setNotificationModal({
+          isVisible: true,
+          message: "Không có giao dịch nào để thực hiện!",
+        });
         return;
       }
 
@@ -174,12 +220,18 @@ const BuyPrintingPages = () => {
         });
 
         if (response.ok) {
-          alert("Giao dịch đã được cập nhật thành công!");
+          setNotificationModal({
+            isVisible: true,
+            message: "Giao dịch đã được cập nhật thành công!",
+          });
           localStorage.removeItem("temp_transaction"); // Xóa sau khi commit
           setCurrentPages((prev) => prev + buyQuantity);
         } else {
           console.error("Lỗi khi cập nhật giao dịch:", response.status, response.statusText);
-          alert("Không thể cập nhật giao dịch. Vui lòng thử lại.");
+          setNotificationModal({
+            isVisible: true,
+            message: "Không thể cập nhật giao dịch. Vui lòng thử lại.",
+          });
         }
       } catch (error) {
         console.error("Lỗi khi cập nhật giao dịch:", error);
@@ -187,6 +239,15 @@ const BuyPrintingPages = () => {
     }
     else console.error("No transaction to commit");
   };
+
+  const handleCloseModal = () => {
+    setNotificationModal({ isVisible: false, message: "" });
+  };
+
+  const handleCloseSpecialModal = () => {
+    setSpecialNotificationModal({isVisible: false, message: "" });
+    navigate('/home');
+  }
 
 
   const totalAmount = buyQuantity * pricePerPage;
@@ -305,7 +366,18 @@ const BuyPrintingPages = () => {
           )}
         </section>
       </main>
-
+      {notificationModal.isVisible && (
+        <NotificationModal
+          message={notificationModal.message}
+          onClose={handleCloseModal}
+        />
+      )}
+      {specialNotificationModal.isVisible && (
+        <NotificationModal 
+          message={specialNotificationModal.message}
+          onClose={handleCloseSpecialModal}
+        />
+      )}
     </div>
   );
 };

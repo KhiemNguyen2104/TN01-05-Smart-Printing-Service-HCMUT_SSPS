@@ -86,6 +86,31 @@ const ManagePrinter = () => {
     setCurrentPage(1);
   };
 
+  const handleSort = (criteria) => {
+    const sorted = [...initialPrintersRef.current].sort((a, b) => {
+      if (criteria === "name") {
+        return a.printer_name.localeCompare(b.printer_name);
+      }
+      else if (criteria === "location") {
+        const dataA = a.printer_name.split(" ").pop();
+        const dataB = b.printer_name.split(" ").pop();
+        return dataA.localeCompare(dataB);
+      }
+      else if (criteria === "type") {
+        const typeA = a.printer_name.split(" ")[2];
+        const typeB = b.printer_name.split(" ")[2];
+        return typeA.localeCompare(typeB); // Example "abc.doc" and "xyz.ppt" we will compare "doc" and "ppt"
+      }
+      else {
+        return 0; // Default case if no valid criteria is provided
+      }
+    });
+
+    setFilteredPrinters(sorted);
+
+    console.log(filteredPrinters);
+  };
+
   const indexOfFirstPrinter = (currentPage - 1) * printersPerPage;
   const currentPrinters = filteredPrinters.slice(
     indexOfFirstPrinter,
@@ -98,7 +123,7 @@ const ManagePrinter = () => {
       <Navbar />
       <main className="flex flex-col px-14 mt-9 w-full max-md:px-5 max-md:max-w-full">
         <div className="flex flex-col items-center pt-5 pb-9 mt-8 w-full bg-white rounded-2xl shadow-md shadow-[rgba(0,0,0,0.1)] border border-solid border-neutral-300">
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={handleSearch} onSort={handleSearch}/>
           <div className="shrink-0 self-stretch mt-5 h-px bg-neutral-400" />
           {loading ? (
             <p>Loading printers...</p>

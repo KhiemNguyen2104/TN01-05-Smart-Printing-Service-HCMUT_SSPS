@@ -17,7 +17,7 @@ const HeaderProfile = () => {
   return (
     <header className="bg-blue-900 text-white p-2 sm:p-4 flex items-center justify-between">
       {/* Logo và thông tin trường */}
-      <div className="flex items-center gap-2 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 z-50">
         <img
           src="hcmut-logo.png"
           alt="HCMUT Logo"
