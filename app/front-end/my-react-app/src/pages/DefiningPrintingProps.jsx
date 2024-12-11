@@ -26,6 +26,7 @@ const DefiningPrintingProps = () => {
   const [pages, setPages] = useState("");
   const [doubleSided, setDoubleSided] = useState('false');
   const [totalPages, setTotalPages] = useState(10);
+  const [student, setStudent] = useState(null);
 
   // File handling state
   const [file, setFile] = useState(null);
@@ -143,6 +144,32 @@ const DefiningPrintingProps = () => {
     }
   };
 
+  const getStudentInfor = async () => {
+    const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
+    
+    const response = await fetch(`http://localhost:3001/user/id/${userId}`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem('token'),
+      }
+    })
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log(JSON.stringify(result));
+
+      setStudent(result);
+    }
+    else {
+      console.error("Get student information fail");
+    }
+  } 
+
+  useEffect(() => {
+    getStudentInfor();
+  }, [])
+
   const pagesValidate = (pages) => {
     // Regular expressions for single page and range
     const pageRegex = /^\d+$/; // Matches a single page (e.g., "11")
@@ -189,28 +216,26 @@ const DefiningPrintingProps = () => {
 
 
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => {    
     const printFile = localStorage.getItem('printFile');
     const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
     const printerId = localStorage.getItem('printer'); // Replace with actual printer ID
 
     if (!pages) setPages(getPagesToDisplay().join(',')); // Page numbers
 
-    console.log("Pages: ", pages);
+    // if (pagesValidate(pages) == -1) console.error("Invalid pages");
 
-    if (pagesValidate(pages) == -1) console.error("Invalid pages");
-
-    const spending_pages = pagesValidate(pages);
+    const spending_pages = (pages) ? pagesValidate(pages) : pagesValidate(getPagesToDisplay().join(','));
 
     const printJobData = {
       student_id: userId,
       printer_id: printerId,
       file_name: printFile,
       no_of_copies: noOfCopies, // Adjust as needed
-      double_sided: doubleSided, // Adjust as needed
-      direction: orientation, // Portrait or Landscape
+      double_sided: doubleSided ? "true" : "false", // Adjust as needed
+      direction: orientation.toLowerCase(), // Portrait or Landscape
       page_type: pageType, // A2, A3, A4, A5, Letter
-      pages: pages
+      pages: (pages == "") ? getPagesToDisplay().join(',') : pages
     };
 
     localStorage.setItem('pageType', pageType);
@@ -222,10 +247,12 @@ const DefiningPrintingProps = () => {
       localStorage.setItem('totalPages', spending_pages);
     }
 
-    console.log(printJobData);
+    console.log("Pages: ", localStorage.getItem('totalPages'));
+
+    console.log("Data: ", printJobData);
 
     // Send POST request
-    await fetch("http://localhost:3001/printer/prints", {
+    const printingJob = await fetch("http://localhost:3001/printer/prints", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -234,6 +261,46 @@ const DefiningPrintingProps = () => {
       body: JSON.stringify(printJobData),
     });
 
+    if(!printingJob) console.error("Cannot take the printing job response");
+    else {
+      const result = await printingJob.json();
+      localStorage.setItem('printingJobId', result.printing_job_id);
+    }
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      console.log(`Key: ${key}, Value: ${value}`);
+    }
+
+    let flag = false;
+
+    if (!student) console.error("Get student fail");
+    console.log("Student: ", student);
+    switch (pageType) {
+      case "A2":
+        flag = student.students.remaining_A2_pages > localStorage.getItem('totalPages');
+        break;
+      case "A3":
+        flag = student.students.remaining_A3_pages > localStorage.getItem('totalPages');
+        break;
+      case "A4":
+        flag = student.students.remaining_A4_pages > localStorage.getItem('totalPages');
+        break;
+      case "A5":
+        flag = student.students.remaining_A5_pages > localStorage.getItem('totalPages');
+        break;
+      case "Letter":
+        flag = student.students.remaining_Letter_pages > localStorage.getItem('totalPages');
+        break;
+    }
+
+    console.log("Is enough pages: ", flag);
+    localStorage.setItem('isEnoughPages', flag);
+
+    console.log(localStorage.getItem('isEnoughPages'));
+
+    localStorage.setItem('isPrinting', true);
     navigate("/buy-printing-pages");
   };
 
@@ -245,12 +312,12 @@ const DefiningPrintingProps = () => {
           {/* Cỡ giấy */}
           <div className="mb-4">
             <label className="block font-medium mb-2 text-lg">Cỡ giấy</label>
-            <select className="w-full mt-1 p-2 bg-white text-black border">
-              <option onClick={() => { setPageType("A4") }}>A4</option>
-              <option onClick={() => { setPageType("A2") }}>A2</option>
-              <option onClick={() => { setPageType("A3") }}>A3</option>
-              <option onClick={() => { setPageType("A5") }}>A5</option>
-              <option onClick={() => { setPageType("Letter") }}>Letter</option>
+            <select className="w-full mt-1 p-2 bg-white text-black border" onChange={(e) => setPageType(e.target.value)}>
+              <option>A4</option>
+              <option>A2</option>
+              <option>A3</option>
+              <option>A5</option>
+              <option>Letter</option>
             </select>
           </div>
 

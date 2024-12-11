@@ -6,12 +6,12 @@ import { File_types } from '@prisma/client';
 
 @Injectable()
 export class FileService {
-    constructor (private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) { }
 
     async UploadNewFile(dto: UploadFileDto) {
         try {
             let fileId = await argon.hash(dto.file_name + " " + dto.file_type);
-            
+
             const student = await this.prisma.sTUDENT.findUnique({
                 where: {
                     student_id: dto.student_id

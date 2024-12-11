@@ -3,14 +3,19 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
 const BuyPrintingPages = () => {
-  const [paperType, setPaperType] = useState("A4");
+  const [paperType, setPaperType] = useState(localStorage.getItem('pageType'));
   const [pricePerPage, setPricePerPage] = useState(300);
   const [currentPages, setCurrentPages] = useState(0);
-  const [requiredPages] = useState(40);
+  const requiredPages = localStorage.getItem('totalPages');
   const [buyQuantity, setBuyQuantity] = useState(0);
   const [userData, setUserData] = useState(null);
   const [studentData, setStudentData] = useState(null);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [isCancelingOpen, setIsCancelingOpen] = useState(false);
+
+  // useEffect(() => {
+  //   handleSidebarClick(localStorage.getItem('pageType'));
+  // })
 
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -33,13 +38,40 @@ const BuyPrintingPages = () => {
       if (response.ok) {
         const data = await response.json();
         setStudentData(data.students);
-        setCurrentPages(data.students.remaining_A4_pages);
+        switch (paperType) {
+          case "A2":
+            setCurrentPages(data.students.remaining_A2_pages);
+            break;
+          case "A3":
+            setCurrentPages(data.students.remaining_A3_pages);
+            break;
+          case "A4":
+            setCurrentPages(data.students.remaining_A4_pages);
+            break;
+          case "A5":
+            setCurrentPages(data.students.remaining_A5_pages);
+            break;
+          case "Letter":
+            setCurrentPages(data.students.remaining_Letter_pages);
+            break;
+        }
       } else {
         console.error("Lỗi khi fetch API:", response.statusText);
       }
     } catch (error) {
       console.error("Lỗi khi fetch dữ liệu:", error);
     }
+  };
+
+  const handlePrintImmediately = () => {
+
+  }
+  const handleCancelTransaction = () => {
+    setIsCancelingOpen(true);
+  };
+
+  const cancelPrinting = () => {
+
   };
 
   const handleSidebarClick = (type) => {
@@ -52,12 +84,12 @@ const BuyPrintingPages = () => {
         type === "A4"
           ? studentData.remaining_A4_pages
           : type === "A3"
-          ? studentData.remaining_A3_pages
-          : type === "A5"
-          ? studentData.remaining_A5_pages
-          : type === "A2"
-          ? studentData.remaining_A2_pages
-          : studentData.remaining_Letter_pages;
+            ? studentData.remaining_A3_pages
+            : type === "A5"
+              ? studentData.remaining_A5_pages
+              : type === "A2"
+                ? studentData.remaining_A2_pages
+                : studentData.remaining_Letter_pages;
       setCurrentPages(pages || 0);
     }
     setBuyQuantity(0);
@@ -89,7 +121,6 @@ const BuyPrintingPages = () => {
         const result = await response.json();
         localStorage.setItem("temp_transaction", JSON.stringify(result));
         alert("Đơn đã được thêm vào giỏ hàng!");
-        setCurrentPages((prev) => prev + buyQuantity);
         setBuyQuantity(0);
       } else {
         console.error("Lỗi khi tạo giao dịch:", response.status, response.statusText);
@@ -104,39 +135,59 @@ const BuyPrintingPages = () => {
   };
 
   const handleCommitTransaction = async () => {
-    const tempTransaction = localStorage.getItem("temp_transaction");
-  
-    if (!tempTransaction) {
-      alert("Không có giao dịch nào để thực hiện!");
-      return;
-    }
-  
-    try {
-      // Parse tempTransaction và thêm state vào
-      const transactionData = JSON.parse(tempTransaction);
-      transactionData.state = "Successful";
-  
-      const response = await fetch(`http://localhost:3001/transaction/commit`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(transactionData), // Chuyển thành JSON string
-      });
-  
-      if (response.ok) {
-        alert("Giao dịch đã được cập nhật thành công!");
-        localStorage.removeItem("temp_transaction"); // Xóa sau khi commit
-      } else {
-        console.error("Lỗi khi cập nhật giao dịch:", response.status, response.statusText);
-        alert("Không thể cập nhật giao dịch. Vui lòng thử lại.");
+    const data = {
+      student_id: userData?.user_id,
+      page_type: paperType,
+      no_of_pages: buyQuantity,
+    };
+
+    const response = await fetch("http://localhost:3001/transaction/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      const tempTransaction = JSON.stringify(result);
+
+      if (!tempTransaction) {
+        alert("Không có giao dịch nào để thực hiện!");
+        return;
       }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật giao dịch:", error);
+
+      try {
+        // Parse tempTransaction và thêm state vào
+        const transactionData = JSON.parse(tempTransaction);
+        transactionData.state = "Successful";
+
+        const response = await fetch(`http://localhost:3001/transaction/commit`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(transactionData), // Chuyển thành JSON string
+        });
+
+        if (response.ok) {
+          alert("Giao dịch đã được cập nhật thành công!");
+          localStorage.removeItem("temp_transaction"); // Xóa sau khi commit
+          setCurrentPages((prev) => prev + buyQuantity);
+        } else {
+          console.error("Lỗi khi cập nhật giao dịch:", response.status, response.statusText);
+          alert("Không thể cập nhật giao dịch. Vui lòng thử lại.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi cập nhật giao dịch:", error);
+      }
     }
+    else console.error("No transaction to commit");
   };
-  
+
 
   const totalAmount = buyQuantity * pricePerPage;
   const vatAmount = totalAmount * 0.1;
@@ -166,8 +217,23 @@ const BuyPrintingPages = () => {
                 </p>
               </div>
               <div>
-                <label className="block text-lg font-medium text-red-500 mb-1">Còn thiếu:</label>
-                <p className="text-xl font-semibold text-red-600">{missingPages} trang</p>
+                {missingPages >= 0 ? (
+                  // Case when `missingPages` is non-negative
+                  <>
+                    <label className="block text-lg font-medium text-red-500 mb-1">
+                      Còn thiếu:
+                    </label>
+                    <p className="text-xl font-semibold text-red-600">{missingPages} trang</p>
+                  </>
+                ) : (
+                  // Case when `missingPages` is negative
+                  <>
+                    <label className="block text-lg font-medium text-green-500 mb-1">
+                      Số trang còn lại sau khi in:
+                    </label>
+                    <p className="text-xl font-semibold text-green-600">{-missingPages} trang</p>
+                  </>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mb-6">
@@ -189,23 +255,31 @@ const BuyPrintingPages = () => {
               <label className="block text-lg font-medium mb-1">Thành tiền (VND):</label>
               <p className="text-xl font-semibold text-gray-700">{totalAmount} VND</p>
             </div>
-            <div className="flex justify-end gap-4">
-              <button
-                className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
-                onClick={() => setIsConfirmationOpen(true)}
-              >
-                Thêm
-              </button>
-            </div>
+            {!JSON.parse(localStorage.getItem('isPrinting')) && (
+              <div className="flex justify-end gap-4">
+                <button
+                  className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+                  onClick={() => setIsConfirmationOpen(true)}
+                >
+                  Thêm
+                </button>
+              </div>
+            )}
           </div>
           <div className=" p-4 flex justify-end">
-        <button
-          className="bg-green-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-          onClick={handleCommitTransaction}
-        >
-          Giao dịch
-        </button>
-      </div>
+            <button
+              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-blue-600 mr-4"
+              onClick={handleCommitTransaction}
+            >
+              Giao dịch
+            </button>
+            <button
+              className="bg-red-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+              onClick={missingPages < 0 ? handlePrintImmediately : handleCancelTransaction}
+            >
+              {missingPages < 0 ? "In ngay" : "Hủy"}
+            </button>
+          </div>
           {isConfirmationOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -231,7 +305,7 @@ const BuyPrintingPages = () => {
           )}
         </section>
       </main>
-      
+
     </div>
   );
 };

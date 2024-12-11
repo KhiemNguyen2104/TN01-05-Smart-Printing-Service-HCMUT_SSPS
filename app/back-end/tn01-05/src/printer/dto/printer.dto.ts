@@ -80,7 +80,7 @@ export class PrintingJobDto {
     @IsNotEmpty()
     double_sided: boolean = false
 
-    @Transform(({ value }) => value === 'Landscape'? Page_directions.Landscape : Page_directions.Portrait, { toClassOnly: true })
+    @Transform(({ value }) => value === 'landscape'? Page_directions.Landscape : Page_directions.Portrait, { toClassOnly: true })
     @IsNotEmpty()
     direction: Page_directions = Page_directions.Portrait
 
