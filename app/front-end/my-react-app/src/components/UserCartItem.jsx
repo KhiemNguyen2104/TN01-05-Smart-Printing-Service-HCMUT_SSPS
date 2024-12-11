@@ -1,6 +1,6 @@
 import React from "react";
 
-function UserCartItem({ id, type, amount, date, onDelete, onPay }) {
+function UserCartItem({ id, type, amount, date, onPay, onCancle }) {
 
   return (
     <tr className="hover:bg-gray-50">
@@ -17,9 +17,9 @@ function UserCartItem({ id, type, amount, date, onDelete, onPay }) {
         </button>
         <button
           className="ml-2 px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
-          onClick={() => onDelete(id)}
+          onClick={() => onCancle({ id, paperType: type, quantity: amount, date })}
         >
-          Xóa
+          Hủy
         </button>
       </td>
     </tr>
