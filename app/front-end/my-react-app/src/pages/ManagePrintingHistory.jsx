@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import SearchBar from "../components/FileSearchBar";
 import FileList from "../components/FileList";
 import BackButton from "../components/BackButton";
+import HeaderAdmin from "../components/HeaderAdmin";
 import { useNavigate } from "react-router-dom";
 
 const PrintingHistory = () => {
@@ -120,7 +121,7 @@ const PrintingHistory = () => {
   return (
     <div className="flex flex-col pb-12 bg-white overflow-hidden">
       {/* Header */}
-      <Header />
+      <HeaderAdmin />
 
       <main className="flex flex-col px-14 mt-9 w-full max-md:px-5 max-md:max-w-full">
         {/* Title and Upload Button */}

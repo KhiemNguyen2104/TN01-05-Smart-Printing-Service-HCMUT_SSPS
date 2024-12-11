@@ -302,7 +302,7 @@ export class PrinterService {
                         student_id: dto.student_id,
                         printer_id: dto.printer_id,
                         printing_job_id: dto.printing_job_id,
-                        file_id: (await file).file_id,
+                        file_id: (file).file_id,
                     }
                 },
             });
@@ -311,7 +311,7 @@ export class PrinterService {
                 student_id: dto.student_id,
                 printer_id: dto.printer_id,
                 printing_job_id: dto.printing_job_id,
-                file_id: (await file).file_id,
+                file_id: (file).file_id,
             })
 
             if (!prints) throw new ForbiddenException("The printing job does not exist");
@@ -329,10 +329,14 @@ export class PrinterService {
 
                 if (!student) throw new ForbiddenException("Student not found");
 
+                console.log("Prints: ", prints);
+
+                let spending_pages = (prints.double_sided == true) ? Math.ceil((no_of_pages * 1.0) / 2) * prints.no_of_copies : no_of_pages * prints.no_of_copies;
+                console.log(spending_pages);
                 let new_pages: number;
                 switch (page_type) {
                     case Page_types.A2:
-                        new_pages = student.remaining_A2_pages - no_of_pages;
+                        new_pages = student.remaining_A2_pages - spending_pages;
                         await this.prisma.sTUDENT.update({
                             where: {
                                 student_id: dto.student_id,
@@ -343,7 +347,7 @@ export class PrinterService {
                         });
                         break;
                     case Page_types.A3:
-                        new_pages = student.remaining_A3_pages - no_of_pages;
+                        new_pages = student.remaining_A3_pages - spending_pages;
                         await this.prisma.sTUDENT.update({
                             where: {
                                 student_id: dto.student_id,
@@ -354,7 +358,7 @@ export class PrinterService {
                         });
                         break;
                     case Page_types.A4:
-                        new_pages = student.remaining_A4_pages - no_of_pages;
+                        new_pages = student.remaining_A4_pages - spending_pages;
                         await this.prisma.sTUDENT.update({
                             where: {
                                 student_id: dto.student_id,
@@ -365,7 +369,7 @@ export class PrinterService {
                         });
                         break;
                     case Page_types.A5:
-                        new_pages = student.remaining_A5_pages - no_of_pages;
+                        new_pages = student.remaining_A5_pages - spending_pages;
                         await this.prisma.sTUDENT.update({
                             where: {
                                 student_id: dto.student_id,
@@ -376,7 +380,7 @@ export class PrinterService {
                         });
                         break;
                     case Page_types.Letter:
-                        new_pages = student.remaining_Letter_pages - no_of_pages;
+                        new_pages = student.remaining_Letter_pages - spending_pages;
                         await this.prisma.sTUDENT.update({
                             where: {
                                 student_id: dto.student_id,

@@ -79,9 +79,6 @@ const HeaderAdmin = () => {
         {/* Menu Dropdown */}
         {showDropdown && (
           <ul className="absolute right-0 top-12 bg-white text-black shadow-lg rounded-md w-40 z-50">
-            <li className="px-4 py-2 cursor-pointer hover:bg-gray-200">
-              Hồ sơ
-            </li>
             <li 
               className="px-4 py-2 cursor-pointer hover:bg-gray-200"
               onClick={() => handleNavigate('/')}>

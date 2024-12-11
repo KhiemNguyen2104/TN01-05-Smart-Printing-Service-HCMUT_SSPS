@@ -15,4 +15,4 @@ import { FileService } from './file/file.service';
   controllers: [AppController],
   providers: [AppService, PrismaService, FileService],
 })
-export class AppModule {}
+export class AppModule { }

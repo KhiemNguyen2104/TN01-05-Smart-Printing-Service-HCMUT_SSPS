@@ -227,7 +227,12 @@ const DefiningPrintingProps = () => {
 
     // if (pagesValidate(pages) == -1) console.error("Invalid pages");
 
-    const spending_pages = (pages) ? pagesValidate(pages) : pagesValidate(getPagesToDisplay().join(','));
+    const temp_pages = (pages) ? pagesValidate(pages) : pagesValidate(getPagesToDisplay().join(','));
+    const spending_pages = (doubleSided == true ?
+      Math.ceil((temp_pages * 1.0) / 2) * noOfCopies
+      :
+      temp_pages * noOfCopies
+    );
 
     const printJobData = {
       student_id: userId,
@@ -242,12 +247,7 @@ const DefiningPrintingProps = () => {
 
     localStorage.setItem('pageType', pageType);
 
-    if (doubleSided) {
-      localStorage.setItem('totalPages', Math.ceil((spending_pages * 1.0) / 2));
-    }
-    else {
-      localStorage.setItem('totalPages', spending_pages);
-    }
+    localStorage.setItem('totalPages', spending_pages);
 
     console.log("Pages: ", localStorage.getItem('totalPages'));
 
@@ -305,7 +305,7 @@ const DefiningPrintingProps = () => {
 
     console.log(localStorage.getItem('isEnoughPages'));
 
-    
+
     navigate("/buy-printing-pages");
   };
 
@@ -409,7 +409,7 @@ const DefiningPrintingProps = () => {
               onChange={(event) => setDoubleSided(event.target.checked)}
             />
             <label htmlFor="doubleSided" className="ml-2 text-lg">
-              Lật 2 mặt
+              In 2 mặt
             </label>
           </div>
         </aside>
