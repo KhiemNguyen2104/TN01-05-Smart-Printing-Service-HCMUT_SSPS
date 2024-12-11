@@ -18,15 +18,12 @@ const NotificationModal = ({ message, onClose }) => (
     </div>
   </div>
 );
-import { useNavigate } from "react-router-dom";
 
 const BuyPrintingPages = () => {
   const navigate = useNavigate();
 
   const [notificationModal, setNotificationModal] = useState({ isVisible: false, message: "" });
   const [specialNotificationModal, setSpecialNotificationModal] = useState({ isVisible: false, message: "" });
-  const navigate = useNavigate();
-  
   const [paperType, setPaperType] = useState(localStorage.getItem('pageType'));
   const [pricePerPage, setPricePerPage] = useState(300);
   const [currentPages, setCurrentPages] = useState(0);
@@ -92,19 +89,7 @@ const BuyPrintingPages = () => {
       });
     }
   };
-
-  const handlePrintImmediately = () => {
-    setSpecialNotificationModal({
-      isVisible: true,
-      message: "Đã in thành công!",
-    });
-  };
-
-  const handleCancelTransaction = () => {
-    setSpecialNotificationModal({
-      isVisible: true,
-      message: "Đã hủy tiến trình in!",
-    });
+    
   const handlePrintImmediately = async () => {
     const data = {
       student_id: JSON.parse(localStorage.getItem("currentUser")).user_id,
@@ -127,8 +112,10 @@ const BuyPrintingPages = () => {
 
     if (response.ok) {
       setCurrentPages((prev) => prev - localStorage.getItem('totalPages'));
-      alert("Prints successfully");
-      navigate('/home');
+      setSpecialNotificationModal({
+        isVisible: true,
+        message: "Đã in thành công!",
+      });
     }
     else {
       const errorData = await response.json();
@@ -156,8 +143,10 @@ const BuyPrintingPages = () => {
     })
 
     if (response.ok) {
-      alert("Cancel the printing task");
-      navigate('/home');
+      setSpecialNotificationModal({
+        isVisible: true,
+        message: "Đã hủy tiến trình in!",
+      });
     }
     else {
       const errorData = await response.json();

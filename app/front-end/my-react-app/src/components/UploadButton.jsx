@@ -1,6 +1,28 @@
 import React, { useState } from "react";
+import { use } from "react";
+import { useNavigate } from "react-router-dom";
+
+const NotificationModal = ({ message, onClose }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <p className="text-lg font-medium mb-4">{message}</p>
+      <div className="flex justify-end">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={onClose}
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 
 const UploadButton = () => {
+  const navigate = useNavigate();
+
+  const [notificationModal, setNotificationModal] = useState({ isVisible: false, message: "" });
   const [showOptions, setShowOptions] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [url, setUrl] = useState("");
@@ -40,11 +62,17 @@ const UploadButton = () => {
 
       if (response.ok) {
         const result = await response.json();
-        alert("File uploaded successfully!");
+        setNotificationModal({
+          isVisible: true,
+          message: "Tải file thành công!",
+        });
         console.log("Upload result:", result);
       } else {
         console.error("Failed to upload file:", response.statusText);
-        alert("Failed to upload file. Please try again.");
+        setNotificationModal({
+          isVisible: true,
+          message: "Tải file không thành công. Vui lòng thử lại!",
+        });
         const errorData = await response.json();
         console.error("Error:", errorData);
       }
@@ -58,6 +86,11 @@ const UploadButton = () => {
     alert(`Google Drive URL: ${url}`);
     setShowUrlInput(false);
     setUrl(""); // Reset URL input
+  };
+
+  const handleCloseModal = () => {
+    setNotificationModal({ isVisible: false, message: "" });
+    window.location.reload();
   };
 
   return (
@@ -130,6 +163,12 @@ const UploadButton = () => {
             </button>
           </div>
         </div>
+      )}
+      {notificationModal.isVisible && (
+        <NotificationModal
+          message={notificationModal.message}
+          onClose={handleCloseModal}
+        />
       )}
     </div>
   );
