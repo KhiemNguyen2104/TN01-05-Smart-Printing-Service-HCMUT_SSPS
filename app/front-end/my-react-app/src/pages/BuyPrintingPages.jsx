@@ -18,12 +18,15 @@ const NotificationModal = ({ message, onClose }) => (
     </div>
   </div>
 );
+import { useNavigate } from "react-router-dom";
 
 const BuyPrintingPages = () => {
   const navigate = useNavigate();
 
   const [notificationModal, setNotificationModal] = useState({ isVisible: false, message: "" });
   const [specialNotificationModal, setSpecialNotificationModal] = useState({ isVisible: false, message: "" });
+  const navigate = useNavigate();
+  
   const [paperType, setPaperType] = useState(localStorage.getItem('pageType'));
   const [pricePerPage, setPricePerPage] = useState(300);
   const [currentPages, setCurrentPages] = useState(0);
@@ -102,6 +105,64 @@ const BuyPrintingPages = () => {
       isVisible: true,
       message: "Đã hủy tiến trình in!",
     });
+  const handlePrintImmediately = async () => {
+    const data = {
+      student_id: JSON.parse(localStorage.getItem("currentUser")).user_id,
+      printer_id: localStorage.getItem('printer'),
+      file_name: localStorage.getItem('printFile'),
+      printing_job_id: localStorage.getItem('printingJobId'),
+      state: "Succesful",
+    }
+
+    console.log("Printing data: ", JSON.stringify(data));
+
+    const response = await fetch("http://localhost:3001/printer/prints/commit", {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem('token'),
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (response.ok) {
+      setCurrentPages((prev) => prev - localStorage.getItem('totalPages'));
+      alert("Prints successfully");
+      navigate('/home');
+    }
+    else {
+      const errorData = await response.json();
+      console.error("Error:", errorData);
+    }
+  }
+  const handleCancelPrintingJob = async () => {
+    const data = {
+      student_id: JSON.parse(localStorage.getItem("currentUser")).user_id,
+      printer_id: localStorage.getItem('printer'),
+      file_name: localStorage.getItem('printFile'),
+      printing_job_id: localStorage.getItem('printingJobId'),
+      state: "Fail_Cancel",
+    }
+
+    console.log("Printing data: ", JSON.stringify(data));
+
+    const response = await fetch("http://localhost:3001/printer/prints/commit", {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem('token'),
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (response.ok) {
+      alert("Cancel the printing task");
+      navigate('/home');
+    }
+    else {
+      const errorData = await response.json();
+      console.error("Error:", errorData);
+    }
   };
 
   // const cancelPrinting = () => {
@@ -271,28 +332,32 @@ const BuyPrintingPages = () => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <label className="block text-lg font-medium mb-1">
-                  Số lượng hiện có / Số lượng yêu cầu:
+                  { localStorage.getItem('isPrinting') == "true" ? "Số lượng hiện có / Số lượng yêu cầu:" : "Số lượng hiện có:"}
                 </label>
                 <p className="text-xl font-semibold text-gray-700">
-                  {currentPages}/{requiredPages}
+                  { localStorage.getItem('isPrinting') == "true" ? `${currentPages}/${requiredPages}` : `${currentPages}`}
                 </p>
               </div>
               <div>
-                {missingPages >= 0 ? (
-                  // Case when `missingPages` is non-negative
+                {localStorage.getItem('isPrinting') == "true" && (
                   <>
-                    <label className="block text-lg font-medium text-red-500 mb-1">
-                      Còn thiếu:
-                    </label>
-                    <p className="text-xl font-semibold text-red-600">{missingPages} trang</p>
-                  </>
-                ) : (
-                  // Case when `missingPages` is negative
-                  <>
-                    <label className="block text-lg font-medium text-green-500 mb-1">
-                      Số trang còn lại sau khi in:
-                    </label>
-                    <p className="text-xl font-semibold text-green-600">{-missingPages} trang</p>
+                    {missingPages >= 0 ? (
+                      // Case when `missingPages` is non-negative
+                      <>
+                        <label className="block text-lg font-medium text-red-500 mb-1">
+                          Còn thiếu:
+                        </label>
+                        <p className="text-xl font-semibold text-red-600">{missingPages} trang</p>
+                      </>
+                    ) : (
+                      // Case when `missingPages` is negative
+                      <>
+                        <label className="block text-lg font-medium text-green-500 mb-1">
+                          Số trang còn lại sau khi in:
+                        </label>
+                        <p className="text-xl font-semibold text-green-600">{-missingPages} trang</p>
+                      </>
+                    )}
                   </>
                 )}
               </div>
@@ -336,7 +401,7 @@ const BuyPrintingPages = () => {
             </button>
             <button
               className="bg-red-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-              onClick={missingPages < 0 ? handlePrintImmediately : handleCancelTransaction}
+              onClick={missingPages < 0 ? handlePrintImmediately : handleCancelPrintingJob}
             >
               {missingPages < 0 ? "In ngay" : "Hủy"}
             </button>

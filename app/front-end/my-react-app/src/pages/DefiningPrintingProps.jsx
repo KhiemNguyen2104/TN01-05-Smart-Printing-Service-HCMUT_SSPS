@@ -221,6 +221,8 @@ const DefiningPrintingProps = () => {
     const userId = JSON.parse(localStorage.getItem("currentUser")).user_id;
     const printerId = localStorage.getItem('printer'); // Replace with actual printer ID
 
+    localStorage.setItem('noOfCopies', noOfCopies);
+
     if (!pages) setPages(getPagesToDisplay().join(',')); // Page numbers
 
     // if (pagesValidate(pages) == -1) console.error("Invalid pages");
@@ -261,11 +263,14 @@ const DefiningPrintingProps = () => {
       body: JSON.stringify(printJobData),
     });
 
+
     if (!printingJob) console.error("Cannot take the printing job response");
     else {
       const result = await printingJob.json();
       localStorage.setItem('printingJobId', result.printing_job_id);
     }
+
+    localStorage.setItem('isPrinting', "true");
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -300,7 +305,7 @@ const DefiningPrintingProps = () => {
 
     console.log(localStorage.getItem('isEnoughPages'));
 
-    localStorage.setItem('isPrinting', true);
+    
     navigate("/buy-printing-pages");
   };
 
