@@ -57,7 +57,11 @@ const HeaderAdmin = () => {
       <div className="flex items-center gap-2 relative">
         {/* Khung tròn chứa chữ K */}
         <div className="rounded-full bg-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-blue-900 font-bold text-lg shadow-md">
-          K
+          <img
+            src="avatar-admin.jpg"
+            alt="Dropdown Icon"
+            className="w-8 h-8 object-contain"
+          />
         </div>
 
         {/* Nút dropdown */}

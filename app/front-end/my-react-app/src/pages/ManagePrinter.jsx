@@ -123,7 +123,7 @@ const ManagePrinter = () => {
       <Navbar />
       <main className="flex flex-col px-14 mt-9 w-full max-md:px-5 max-md:max-w-full">
         <div className="flex flex-col items-center pt-5 pb-9 mt-8 w-full bg-white rounded-2xl shadow-md shadow-[rgba(0,0,0,0.1)] border border-solid border-neutral-300">
-          <SearchBar onSearch={handleSearch} onSort={handleSearch}/>
+          <SearchBar onSearch={handleSearch} onSort={handleSort}/>
           <div className="shrink-0 self-stretch mt-5 h-px bg-neutral-400" />
           {loading ? (
             <p>Loading printers...</p>

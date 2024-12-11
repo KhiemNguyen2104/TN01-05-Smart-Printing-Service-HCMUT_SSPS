@@ -19,7 +19,7 @@ const HeaderProfile = () => {
       {/* Logo và thông tin trường */}
       <div className="flex items-center gap-2 sm:gap-4 z-50">
         <img
-          src="hcmut-logo.png"
+          src="/hcmut-logo.png"
           alt="HCMUT Logo"
           className="w-12 h-12 sm:w-16 sm:h-16"
         />
