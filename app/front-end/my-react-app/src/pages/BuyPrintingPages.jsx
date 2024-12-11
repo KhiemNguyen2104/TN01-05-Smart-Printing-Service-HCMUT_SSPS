@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const BuyPrintingPages = () => {
   const navigate = useNavigate();
-  
+
   const [paperType, setPaperType] = useState(localStorage.getItem('pageType'));
   const [pricePerPage, setPricePerPage] = useState(300);
   const [currentPages, setCurrentPages] = useState(0);
@@ -126,10 +126,6 @@ const BuyPrintingPages = () => {
     }
   };
 
-  const cancelPrinting = () => {
-
-  };
-
   const handleSidebarClick = (type) => {
     setPaperType(type);
     setPricePerPage(
@@ -245,7 +241,7 @@ const BuyPrintingPages = () => {
   };
 
 
-  const totalAmount = buyQuantity * pricePerPage;
+  const totalAmount = buyQuantity * pricePerPage * 1.1;
   const vatAmount = totalAmount * 0.1;
   const missingPages = requiredPages - currentPages;
 
@@ -266,16 +262,16 @@ const BuyPrintingPages = () => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <label className="block text-lg font-medium mb-1">
-                  { localStorage.getItem('isPrinting') == "true" ? "Số lượng hiện có / Số lượng yêu cầu:" : "Số lượng hiện có:"}
+                  {localStorage.getItem('isPrinting') == "true" ? "Số lượng hiện có / Số lượng yêu cầu:" : "Số lượng hiện có:"}
                 </label>
                 <p className="text-xl font-semibold text-gray-700">
-                  { localStorage.getItem('isPrinting') == "true" ? `${currentPages}/${requiredPages}` : `${currentPages}`}
+                  {localStorage.getItem('isPrinting') == "true" ? `${currentPages}/${requiredPages}` : `${currentPages}`}
                 </p>
               </div>
               <div>
                 {localStorage.getItem('isPrinting') == "true" && (
                   <>
-                    {missingPages >= 0 ? (
+                    {missingPages > 0 ? (
                       // Case when `missingPages` is non-negative
                       <>
                         <label className="block text-lg font-medium text-red-500 mb-1">
@@ -335,9 +331,9 @@ const BuyPrintingPages = () => {
             </button>
             <button
               className="bg-red-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-              onClick={missingPages < 0 ? handlePrintImmediately : handleCancelPrintingJob}
+              onClick={missingPages <= 0 ? handlePrintImmediately : handleCancelPrintingJob}
             >
-              {missingPages < 0 ? "In ngay" : "Hủy"}
+              {missingPages <= 0 ? "In ngay" : "Hủy"}
             </button>
           </div>
           {isConfirmationOpen && (
