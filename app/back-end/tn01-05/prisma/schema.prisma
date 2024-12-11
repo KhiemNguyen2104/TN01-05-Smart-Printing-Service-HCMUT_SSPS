@@ -1,0 +1,290 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// The available types of documents
+enum File_types {
+  PDF
+  DOC
+  DOCX
+  XLSX
+  JPEG
+  PNG
+  PPT
+  PPTX
+}
+
+enum Printing_states {
+  Succesful
+  Fail_Not_Enough_pages
+  Fail_Cancel
+}
+
+enum Transaction_states {
+  Successful
+  Fail_Pending
+  Fail_Cancel
+}
+
+// The types of printing pages
+enum Page_types {
+  A2
+  A3
+  A4
+  A5
+  Letter
+}
+
+// Directions of the pages
+enum Page_directions {
+  Portrait
+  Landscape
+}
+
+// The available locations for the printers
+enum Locations {
+  //HCM Campus
+  A1_F1
+  A1_F3
+  A2_F1
+  A2_F3
+  A3_F1
+  A3_F3
+  A3_F5
+  A4_F1
+  A4_F3
+  A4_F5
+  A5_F1
+  A5_F3
+
+  B1_F1
+  B2_F1
+  B3_F1
+  B4_F1
+  B4_F3
+  B4_F6
+
+  C1_F1
+  C1_F3
+  C2_F1
+  C2_F3
+  C3_F1
+  C3_F3
+  C4_F1
+  C4_F3
+  C4_F6
+  C5_F1
+  C5_F3
+  C5_F6
+  C6_F1
+  C6_F3
+  C6_F6
+
+  // Di An Campus
+  H1_F1
+  H1_F4
+  H1_F8
+
+  H2_F1
+  H2_F3
+  H2_F6
+
+  H3_F1
+  H3_F3
+  H3_F6
+
+  H6_F1
+  H6_F4
+  H6_F8
+}
+
+model USER {
+  user_id    String @id
+  user_name  String
+  user_email String @unique
+  hash_key   String
+
+  // Relation with STUDENT
+  students STUDENT?
+
+  //Relation with SPSO
+  spso SPSO?
+}
+
+model STUDENT {
+  student_id      String        @id
+  remaining_A2_pages Int           @default(0)
+  remaining_A3_pages Int           @default(0)
+  remaining_A4_pages Int           @default(0)
+  remaining_A5_pages Int           @default(0)
+  remaining_Letter_pages Int           @default(0)
+  transactions    TRANSACTION[]
+
+  // Relation between `student_id` and `user_id` of USER
+  user USER @relation(fields: [student_id], references: [user_id], onUpdate: Cascade)
+
+  // Printing jobs
+  prints PRINTS[]
+
+  upload UPLOADS[]
+}
+
+model SPSO {
+  SPSO_id String @id
+
+  //Relation with USER
+  user USER @relation(fields: [SPSO_id], references: [user_id], onUpdate: Cascade)
+
+  changes CHANGES[]
+}
+
+model TRANSACTION {
+  student_id String
+
+  time        DateTime           @default(now())
+  page_type   Page_types
+  price       Int
+  no_of_pages Int
+  state       Transaction_states @default(Fail_Pending)
+
+  student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
+
+  @@id([student_id, time, page_type, price, no_of_pages, state])
+}
+
+model PRINTER {
+  printer_id String @id
+
+  printer_name String
+  manufacturer String?
+  description  String?
+  location     Locations
+  is_enable    Boolean   @default(true)
+
+  // Printing jobs
+  prints PRINTS[]
+}
+
+model FILE {
+  file_id String @id
+
+  file_name String
+  file_type File_types
+  file_size Int
+
+  uploads UPLOADS[]
+  prints  PRINTS[]
+
+  @@unique([file_name, file_type])
+}
+
+model UPLOADS {
+  student_id String
+  file_id    String
+
+  student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
+  file    FILE    @relation(fields: [file_id], references: [file_id], onUpdate: Cascade)
+
+  time DateTime @default(now())
+
+  @@id([student_id, file_id, time])
+}
+
+model PRINTS {
+  printing_job_id String @unique
+  student_id      String
+  printer_id      String
+  file_id         String
+
+  start_time   DateTime        @default(now())
+  end_time     DateTime
+  no_of_copies Int             @default(1)
+  double_sided Boolean         @default(false)
+  direction    Page_directions @default(Portrait)
+  page_type    Page_types
+  state        Printing_states
+  pages        String
+
+  student STUDENT @relation(fields: [student_id], references: [student_id], onUpdate: Cascade)
+  printer PRINTER @relation(fields: [printer_id], references: [printer_id], onUpdate: Cascade)
+  file    FILE    @relation(fields: [file_id], references: [file_id], onUpdate: Cascade)
+
+  @@id([student_id, printer_id, printing_job_id, file_id])
+}
+
+model SYSTEM_POLICY {
+  SP_id String @id @default("SP1")
+
+  max_file_size  Int      @default(300)
+  allocated_date DateTime
+
+  default_pages   DEFAULT_PAGE[]
+  permitted_types PERMITTED_TYPE[]
+  changes         CHANGES[]
+}
+
+model DEFAULT_PAGE {
+  SP_id     String
+  page_type Page_types
+  number    Int
+
+  sp SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id], onUpdate: Cascade)
+
+  @@id([SP_id, page_type, number])
+}
+
+model PERMITTED_TYPE {
+  SP_id     String
+  file_type File_types
+
+  sp SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id], onUpdate: Cascade)
+
+  @@id([SP_id, file_type])
+}
+
+model CHANGES {
+  change_id String @unique
+  SPSO_id   String
+  SP_id     String
+
+  time            DateTime                  @default(now())
+  allocated_date  DateTime?
+  max_file_size   Int?
+  permitted_types CHANGES_PERMITTED_TYPES[]
+  default_pages   CHANGES_DEFAULT_PAGES[]
+
+  spso SPSO          @relation(fields: [SPSO_id], references: [SPSO_id], onUpdate: Cascade)
+  sp   SYSTEM_POLICY @relation(fields: [SP_id], references: [SP_id], onUpdate: Cascade)
+
+  @@id([change_id, SPSO_id, SP_id])
+}
+
+model CHANGES_PERMITTED_TYPES {
+  change_id String @id
+
+  Type File_types
+
+  changes CHANGES @relation(fields: [change_id], references: [change_id], onUpdate: Cascade)
+}
+
+model CHANGES_DEFAULT_PAGES {
+  change_id String @id
+
+  page_type Page_types
+  number    Int
+
+  changes CHANGES @relation(fields: [change_id], references: [change_id], onUpdate: Cascade)
+}
+
+// TODO []: Do we need a table for permitted types, an array might be a better design.
